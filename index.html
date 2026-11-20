@@ -158,6 +158,7 @@
       <div class="fact hl" id="factVen"><div class="k" data-t="f_ven"></div><div class="v" id="rateVen"></div><div class="n" data-t="f_rate_nv"></div></div>
       <div class="fact"><div class="k" data-t="f_time"></div><div class="v" data-t="f_time_v"></div><div class="n" data-t="f_time_n"></div></div>
       <div class="fact"><div class="k" data-t="f_deadline"></div><div class="v" id="deadline" style="font-size:22px"></div><div class="n" data-t="f_deadline_n"></div></div>
+      <div class="fact" id="factPay"><div class="k" data-t="f_pay"></div><div class="v" style="font-size:22px" data-t="f_pay_v"></div><div class="n" data-t="f_pay_n"></div></div>
       <div class="fact"><div class="k" data-t="f_device"></div><div class="v" style="font-size:18px">Huawei · Apple · Samsung</div><div class="n" data-t="f_device_n"></div></div>
     </div>
   </div>
@@ -338,7 +339,7 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
-  VERSION: "v1.5",
+  VERSION: "v1.6",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
@@ -616,13 +617,14 @@ window.CONFIG = {
       f_time: "Time needed", f_time_v: "3–5 hours", f_time_n: "in total, at your own pace",
       f_deadline: "Deadline", f_deadline_n: "all recordings finished",
       f_device: "Phone", f_device_n: "other brands are not accepted",
+      f_pay: "Payment", f_pay_v: "45–60 days", f_pay_n: "after the project is completed",
       how_title: "How it works",
       how_lead: "Everyone takes a short test before the full recording.",
       how1: "Register with your details",
       how2: "Record 5 test sentences on this page",
       how3: "We check your audio quality",
       how4: "Pass and receive the full 1,300-sentence script",
-      how5: "Finish all sentences and get paid after the quality check",
+      how5: "Finish all sentences. Payment is made 45–60 days after the project is completed",
       req_title: "Requirements", req_lead: "Please read carefully before you apply.",
       req1: "Indonesian native speaker using standard Indonesian (no imitated accent)",
       req2: "Age 18–55, male or female",
@@ -633,7 +635,7 @@ window.CONFIG = {
       req7: "Do not record when you have a cold or a hoarse voice",
       req8: "One person = one registration. Voiceprints are checked",
       imp_title: "Important:",
-      imp_text: "You must record all 1,300 sentences. Partial work is not paid.",
+      imp_text: "You must record all 1,300 sentences. Partial work is not paid. Payment is made 45–60 days after the project is completed.",
       quota_title: "Open slots",
       quota_lead: "We need a balanced team by age and gender. Full groups close automatically.",
       th_age: "Age group", th_m: "Male", th_f: "Female",
@@ -712,13 +714,14 @@ window.CONFIG = {
       f_time: "Waktu", f_time_v: "3–5 jam", f_time_n: "total, sesuai waktu luang Anda",
       f_deadline: "Batas waktu", f_deadline_n: "semua rekaman selesai",
       f_device: "HP", f_device_n: "merek lain tidak diterima",
+      f_pay: "Pembayaran", f_pay_v: "45–60 hari", f_pay_n: "setelah proyek selesai",
       how_title: "Cara kerja",
       how_lead: "Semua peserta mengikuti tes singkat sebelum rekaman penuh.",
       how1: "Daftar dengan data diri Anda",
       how2: "Rekam 5 kalimat tes di halaman ini",
       how3: "Kami memeriksa kualitas audio Anda",
       how4: "Lulus dan terima naskah lengkap 1.300 kalimat",
-      how5: "Selesaikan semua kalimat dan terima bayaran setelah pemeriksaan kualitas",
+      how5: "Selesaikan semua kalimat. Pembayaran dilakukan 45–60 hari setelah proyek selesai",
       req_title: "Persyaratan", req_lead: "Mohon baca dengan teliti sebelum mendaftar.",
       req1: "Penutur asli bahasa Indonesia baku (tidak meniru logat)",
       req2: "Usia 18–55 tahun, pria atau wanita",
@@ -729,7 +732,7 @@ window.CONFIG = {
       req7: "Jangan merekam saat flu atau suara serak",
       req8: "Satu orang = satu pendaftaran. Sidik suara akan diperiksa",
       imp_title: "Penting:",
-      imp_text: "Anda wajib merekam semua 1.300 kalimat. Pekerjaan yang tidak selesai tidak dibayar.",
+      imp_text: "Anda wajib merekam semua 1.300 kalimat. Pekerjaan yang tidak selesai tidak dibayar. Pembayaran dilakukan 45–60 hari setelah proyek selesai.",
       quota_title: "Slot tersedia",
       quota_lead: "Kami membutuhkan tim yang seimbang berdasarkan usia dan jenis kelamin. Kelompok yang penuh akan ditutup otomatis.",
       th_age: "Kelompok usia", th_m: "Pria", th_f: "Wanita",
@@ -888,7 +891,7 @@ window.CONFIG = {
     $("vendorName").value = VENDOR_PARAM;
     $("vendorBanner").style.display = "block";
     // Members see no rates, no vendor tools and no contact/payment fields
-    ["factInd", "factVen", "venCard", "typeField", "cityField", "contactRow", "payRow"].forEach(function (id) { $(id).style.display = "none"; });
+    ["factInd", "factVen", "factPay", "venCard", "typeField", "cityField", "contactRow", "payRow"].forEach(function (id) { $(id).style.display = "none"; });
   }
   syncType();
   if (VMODE) $("vendorFields").style.display = "none";
