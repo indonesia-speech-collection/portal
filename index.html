@@ -338,7 +338,7 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
-  VERSION: "v1.4",
+  VERSION: "v1.5",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
@@ -567,7 +567,24 @@ window.CONFIG = {
     return buf;
   }
 
-  var api = { resample: resample, analyze: analyze, encodeWAV: encodeWAV };
+  // Remove DC offset and low rumble (high-pass ~60 Hz). Many phone mics have a DC offset
+  // that otherwise shows up as "background noise" even in a silent room.
+  function highpass(x, sr, fc) {
+    fc = fc || 60;
+    var rc = 1 / (2 * Math.PI * fc), dt = 1 / sr, k = rc / (rc + dt);
+    var out = new Float32Array(x.length);
+    if (!x.length) return out;
+    var mean = 0, n = Math.min(x.length, Math.round(sr * 0.05));
+    for (var i = 0; i < n; i++) mean += x[i];
+    mean /= n || 1;
+    var px = mean, py = 0;
+    for (var j = 0; j < x.length; j++) {
+      py = k * (py + x[j] - px); px = x[j]; out[j] = py;
+    }
+    return out;
+  }
+
+  var api = { resample: resample, analyze: analyze, encodeWAV: encodeWAV, highpass: highpass };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.AudioTools = api;
 })(this);
@@ -963,7 +980,7 @@ window.CONFIG = {
     var len = a.chunks.reduce(function (n, c) { return n + c.length; }, 0);
     var all = new Float32Array(len), o = 0;
     a.chunks.forEach(function (c) { all.set(c, o); o += c.length; });
-    return AudioTools.resample(all, a.rate, A.SAMPLE_RATE);
+    return AudioTools.highpass(AudioTools.resample(all, a.rate, A.SAMPLE_RATE), A.SAMPLE_RATE, 60);
   }
 
   // ------------------------------------------------------------------ STEP 2 ROOM CHECK
@@ -987,7 +1004,7 @@ window.CONFIG = {
         var ok = roomNoise < lim && roomPeak < lim * 4;
         if (roomPeak >= lim * 4) roomNoise = Math.max(roomNoise, Math.round(roomPeak / 4));
         msg.className = "msg show " + (ok ? "ok" : "err");
-        msg.textContent = t(ok ? "room_ok" : "room_bad", { n: roomNoise });
+        msg.textContent = t(ok ? "room_ok" : "room_bad", { n: roomNoise + " (max " + Math.round(roomPeak) + ")" });
         $("next2").disabled = !ok;
       }, 3000);
     }).catch(function () { btn.disabled = false; btn.lastChild.textContent = t("room_btn"); msg.className = "msg err show"; msg.textContent = t("mic_denied"); });
