@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Indonesian Reading Recording Project</title>
+<meta name="description" content="Read 1,300 Indonesian sentences on your phone and get paid. Native speakers aged 18-55.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1a1f; --muted:#6b6873; --line:#e8e4df; --bg:#faf7f3; --card:#fff;
+    --red:#c8102e; --red-d:#9c0c24; --red-soft:#fbe9ec;
+    --green:#16794b; --green-soft:#e5f4ec; --amber:#a16207; --amber-soft:#fdf3dc;
+    --radius:16px; --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(27,26,31,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--red)}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+  header{position:sticky;top:0;z-index:20;background:rgba(250,247,243,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
+  .flag{width:26px;height:18px;border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column}
+  .flag i{flex:1;display:block}.flag i:first-child{background:var(--red)}.flag i:last-child{background:#fff}
+  .lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+  .lang button{border:0;background:none;padding:6px 14px;font:600 13px inherit;font-family:inherit;cursor:pointer;color:var(--muted)}
+  .lang button.on{background:var(--ink);color:#fff}
+
+  .hero{padding:56px 0 28px}
+  .tag{display:inline-flex;align-items:center;gap:8px;background:var(--red-soft);color:var(--red-d);font-weight:700;font-size:13px;padding:6px 12px;border-radius:999px}
+  .tag .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.6s infinite}
+  @keyframes pulse{50%{opacity:.3}}
+  h1{font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.03em;margin:18px 0 14px;font-weight:800;max-width:14ch}
+  .sub{font-size:18px;color:var(--muted);max-width:56ch;margin:0 0 26px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:14px 22px;font:700 16px inherit;font-family:inherit;cursor:pointer;text-decoration:none;transition:transform .08s,background .15s}
+  .btn:active{transform:scale(.98)}
+  .btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-d)}
+  .btn-dark{background:var(--ink);color:#fff}
+  .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-sm{padding:10px 14px;font-size:14px;border-radius:10px}
+
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:34px 0 8px}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+  .fact .k{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .fact .v{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:4px 0 2px}
+  .fact .n{font-size:13px;color:var(--muted)}
+  .fact.hl{background:var(--ink);color:#fff;border-color:var(--ink)}.fact.hl .k,.fact.hl .n{color:#bdb8c4}
+
+  section{padding:36px 0}
+  h2{font-size:clamp(24px,3.6vw,32px);letter-spacing:-.02em;margin:0 0 6px;font-weight:800}
+  .lead{color:var(--muted);margin:0 0 22px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  .steps li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-weight:600}
+  .steps li::before{content:counter(s);flex:0 0 30px;height:30px;border-radius:50%;background:var(--red-soft);color:var(--red-d);display:grid;place-items:center;font-weight:800}
+  ul.req{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+  ul.req li{display:flex;gap:10px}
+  ul.req li::before{content:"";flex:0 0 18px;height:18px;margin-top:3px;border-radius:50%;background:var(--green-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' fill='none' stroke='%2316794b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+  .warnbox{background:var(--red-soft);border:1px solid #f3c6cf;border-radius:14px;padding:16px 18px;margin-top:16px}
+  .warnbox b{color:var(--red-d)}
+
+  table.q{width:100%;border-collapse:collapse;font-size:15px}
+  table.q th,table.q td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left}
+  table.q th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700}
+  .pill.open{background:var(--green-soft);color:var(--green)}.pill.full{background:#eee;color:#888}
+
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  label.l{font-weight:700;font-size:14px}
+  .hint{font-size:12.5px;color:var(--muted)}
+  input,select{font:inherit;font-size:16px;padding:12px 14px;border:1px solid #d9d4cd;border-radius:10px;background:#fff;color:var(--ink);width:100%}
+  input:focus,select:focus{outline:2px solid var(--red);outline-offset:1px;border-color:transparent}
+  input[readonly]{background:#f3f0ec}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .seg label{border:1.5px solid #d9d4cd;border-radius:12px;padding:12px;cursor:pointer;background:#fff;display:flex;flex-direction:column;gap:2px}
+  .seg input{display:none}
+  .seg label:has(input:checked){border-color:var(--red);background:var(--red-soft)}
+  .seg .t{font-weight:800}.seg .s{font-size:13px;color:var(--muted)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.row2{grid-template-columns:1fr}}
+  .check{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:10px 0}
+  .check input{width:20px;height:20px;flex:0 0 20px;margin-top:2px;accent-color:var(--red)}
+
+  .stepper{display:flex;gap:6px;margin-bottom:18px}
+  .stepper div{flex:1;height:6px;border-radius:9px;background:var(--line)}
+  .stepper div.on{background:var(--red)}
+  .stepname{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .panel{display:none}.panel.on{display:block}
+  .nav{display:flex;gap:10px;justify-content:space-between;margin-top:18px}
+  .msg{border-radius:12px;padding:12px 14px;font-size:14px;margin:12px 0;display:none}
+  .msg.show{display:block}
+  .msg.err{background:var(--red-soft);color:var(--red-d)}
+  .msg.ok{background:var(--green-soft);color:var(--green)}
+  .msg.warn{background:var(--amber-soft);color:var(--amber)}
+  .banner{background:var(--ink);color:#fff;border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:14px;display:none}
+
+  .sent{border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;background:#fff}
+  .sent.pass{border-color:#a7dcc0;background:#fbfefc}
+  .sent.fail{border-color:#f3c6cf}
+  .sent .num{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.06em}
+  .sent .txt{font-size:19px;font-weight:600;margin:6px 0 12px;line-height:1.45}
+  .sent .ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .sent audio{height:38px;max-width:100%}
+  .rec-dot{width:10px;height:10px;border-radius:50%;background:#fff;display:inline-block}
+  .recording .rec-dot{animation:pulse 1s infinite}
+  .meter{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:10px;display:none}
+  .meter i{display:block;height:100%;width:0;background:var(--red);transition:width .08s}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font-size:12.5px;padding:4px 10px;border-radius:999px;font-weight:600;background:#f1eee9}
+  .chip.pass{background:var(--green-soft);color:var(--green)}
+  .chip.warn{background:var(--amber-soft);color:var(--amber)}
+  .chip.fail{background:var(--red-soft);color:var(--red-d)}
+  .status{font-weight:800;font-size:14px;margin-top:10px}
+  .status.pass{color:var(--green)}.status.warn{color:var(--amber)}.status.fail{color:var(--red-d)}
+  .summary{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14.5px}
+  .summary dt{color:var(--muted)}.summary dd{margin:0;font-weight:600}
+
+  .modal{position:fixed;inset:0;background:rgba(20,18,24,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .modal.show{display:flex}
+  .modal .box{background:#fff;border-radius:20px;max-width:440px;width:100%;padding:28px;text-align:center}
+  .modal .big{width:64px;height:64px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center;margin:0 auto 14px;font-size:30px;color:var(--green)}
+  .wa{background:#25d366;color:#fff}
+  footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:14px}
+  .contact{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+  .vlink{display:flex;gap:8px;margin-top:10px}
+  .vlink input{font-size:14px}
+  .spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp 0.8s linear infinite;display:inline-block}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand"><span class="flag"><i></i><i></i></span><span id="brandName">Translitmedia</span></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button data-lang="id">ID</button>
+      <button data-lang="en" class="on">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <span class="tag"><span class="dot"></span><span data-t="hero_tag"></span></span>
+    <h1 data-t="hero_title"></h1>
+    <p class="sub" data-t="hero_sub"></p>
+    <a href="#apply" class="btn btn-red" data-t="cta"></a>
+
+    <div class="facts">
+      <div class="fact hl"><div class="k" data-t="f_ind"></div><div class="v" id="rateInd"></div><div class="n" data-t="f_rate_n"></div></div>
+      <div class="fact hl"><div class="k" data-t="f_ven"></div><div class="v" id="rateVen"></div><div class="n" data-t="f_rate_nv"></div></div>
+      <div class="fact"><div class="k" data-t="f_time"></div><div class="v" data-t="f_time_v"></div><div class="n" data-t="f_time_n"></div></div>
+      <div class="fact"><div class="k" data-t="f_deadline"></div><div class="v" id="deadline" style="font-size:22px"></div><div class="n" data-t="f_deadline_n"></div></div>
+      <div class="fact"><div class="k" data-t="f_device"></div><div class="v" style="font-size:18px">Huawei · Apple · Samsung</div><div class="n" data-t="f_device_n"></div></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap grid2">
+      <div>
+        <h2 data-t="how_title"></h2>
+        <p class="lead" data-t="how_lead"></p>
+        <ol class="steps">
+          <li data-t="how1"></li><li data-t="how2"></li><li data-t="how3"></li><li data-t="how4"></li><li data-t="how5"></li>
+        </ol>
+      </div>
+      <div>
+        <h2 data-t="req_title"></h2>
+        <p class="lead" data-t="req_lead"></p>
+        <div class="card">
+          <ul class="req">
+            <li data-t="req1"></li><li data-t="req2"></li><li data-t="req3"></li><li data-t="req4"></li>
+            <li data-t="req5"></li><li data-t="req6"></li><li data-t="req7"></li><li data-t="req8"></li>
+          </ul>
+        </div>
+        <div class="warnbox"><b data-t="imp_title"></b> <span data-t="imp_text"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap grid2">
+      <div class="card">
+        <h2 data-t="quota_title"></h2>
+        <p class="lead" data-t="quota_lead"></p>
+        <table class="q">
+          <thead><tr><th data-t="th_age"></th><th data-t="th_m"></th><th data-t="th_f"></th></tr></thead>
+          <tbody id="quotaBody"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h2 data-t="ven_title"></h2>
+        <p class="lead" data-t="ven_text"></p>
+        <div class="field">
+          <label class="l" for="vlName" data-t="ven_name"></label>
+          <input id="vlName" autocomplete="organization">
+        </div>
+        <button class="btn btn-dark btn-sm" id="vlMake" data-t="ven_btn"></button>
+        <div class="vlink" id="vlBox" style="display:none">
+          <input id="vlOut" readonly>
+          <button class="btn btn-ghost btn-sm" id="vlCopy" data-t="copy"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="apply">
+    <div class="wrap" style="max-width:720px">
+      <h2 data-t="apply_title"></h2>
+      <p class="lead" data-t="apply_lead"></p>
+
+      <div class="card">
+        <div class="banner" id="vendorBanner"></div>
+        <div class="stepper"><div class="on"></div><div></div><div></div><div></div></div>
+
+        <!-- STEP 1: DETAILS -->
+        <div class="panel on" data-step="1">
+          <div class="stepname" data-t="s1"></div>
+          <div class="field">
+            <label class="l" data-t="type_l"></label>
+            <div class="seg">
+              <label><input type="radio" name="type" value="Individual" checked><span class="t" data-t="type_ind"></span><span class="s" id="segInd"></span></label>
+              <label><input type="radio" name="type" value="Vendor"><span class="t" data-t="type_ven"></span><span class="s" id="segVen"></span></label>
+            </div>
+          </div>
+          <div id="vendorFields" style="display:none">
+            <div class="row2">
+              <div class="field"><label class="l" for="vendorName" data-t="v_name"></label><input id="vendorName"></div>
+              <div class="field"><label class="l" for="vendorWa" data-t="v_wa"></label><input id="vendorWa" inputmode="tel" placeholder="+62"></div>
+            </div>
+          </div>
+          <div class="field"><label class="l" for="fullName" data-t="full_name"></label><input id="fullName" autocomplete="name"></div>
+          <div class="row2">
+            <div class="field"><label class="l" for="gender" data-t="gender"></label>
+              <select id="gender"><option value="" data-t="choose"></option><option value="Male" data-t="male"></option><option value="Female" data-t="female"></option></select></div>
+            <div class="field"><label class="l" for="age" data-t="age"></label><input id="age" type="number" inputmode="numeric" min="18" max="55"></div>
+          </div>
+          <div class="msg" id="quotaMsg"></div>
+          <div class="row2">
+            <div class="field"><label class="l" for="country" data-t="country"></label><input id="country" value="Indonesia" readonly></div>
+            <div class="field"><label class="l" for="city" data-t="city"></label><input id="city"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label class="l" for="wa" data-t="wa"></label><input id="wa" inputmode="tel" placeholder="+62" autocomplete="tel"></div>
+            <div class="field"><label class="l" for="email" data-t="email"></label><input id="email" type="email" autocomplete="email"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label class="l" for="brand" data-t="brand"></label>
+              <select id="brand"><option value="" data-t="choose"></option><option>Huawei</option><option>Apple</option><option>Samsung</option></select></div>
+            <div class="field"><label class="l" for="model" data-t="model"></label><input id="model"><span class="hint" data-t="model_h"></span></div>
+          </div>
+          <div class="msg warn" id="deviceMsg"></div>
+          <div class="row2" id="payRow">
+            <div class="field"><label class="l" for="payMethod" data-t="pay"></label><select id="payMethod"></select></div>
+            <div class="field"><label class="l" for="payId" data-t="pay_id"></label><input id="payId"></div>
+          </div>
+          <label class="check"><input type="checkbox" id="c1"><span data-t="c1"></span></label>
+          <label class="check"><input type="checkbox" id="c2"><span data-t="c2"></span></label>
+          <div class="msg err" id="err1"></div>
+          <div class="nav"><span></span><button class="btn btn-red" id="next1" data-t="next"></button></div>
+        </div>
+
+        <!-- STEP 2: ROOM CHECK -->
+        <div class="panel" data-step="2">
+          <div class="stepname" data-t="s2"></div>
+          <h3 style="margin:4px 0 6px" data-t="room_title"></h3>
+          <p data-t="room_text"></p>
+          <ul class="req" style="margin:12px 0 18px">
+            <li data-t="g1"></li><li data-t="g2"></li><li data-t="g3"></li><li data-t="g4"></li>
+          </ul>
+          <button class="btn btn-dark" id="roomBtn"><span class="rec-dot"></span><span data-t="room_btn"></span></button>
+          <div class="meter" id="roomMeter"><i></i></div>
+          <div class="msg" id="roomMsg"></div>
+          <div class="nav"><button class="btn btn-ghost" data-back="1" data-t="back"></button><button class="btn btn-red" id="next2" data-t="next" disabled></button></div>
+        </div>
+
+        <!-- STEP 3: TEST -->
+        <div class="panel" data-step="3">
+          <div class="stepname" data-t="s3"></div>
+          <p data-t="test_text"></p>
+          <div id="sentences"></div>
+          <div class="msg err" id="err3"></div>
+          <div class="nav"><button class="btn btn-ghost" data-back="2" data-t="back"></button><button class="btn btn-red" id="next3" data-t="next" disabled></button></div>
+        </div>
+
+        <!-- STEP 4: SUBMIT -->
+        <div class="panel" data-step="4">
+          <div class="stepname" data-t="s4"></div>
+          <p data-t="sub_text"></p>
+          <dl class="summary" id="summary"></dl>
+          <div class="msg err" id="err4"></div>
+          <div class="nav"><button class="btn btn-ghost" data-back="3" data-t="back"></button><button class="btn btn-red" id="submitBtn" data-t="submit"></button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap contact">
+    <div><b data-t="contact"></b><br><span id="contactLine"></span></div>
+    <div id="brandFoot"></div>
+  </div>
+</footer>
+
+<div class="modal" id="doneModal">
+  <div class="box">
+    <div class="big">✓</div>
+    <h2 data-t="done_title"></h2>
+    <p id="doneText"></p>
+    <a class="btn wa" id="waBtn" target="_blank" rel="noopener" style="width:100%;display:none" data-t="wa_btn"></a>
+    <p class="hint" id="waHint" style="display:none" data-t="wa_hint"></p>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+//  PORTAL SETTINGS — edit only this file
+// =====================================================================
+window.CONFIG = {
+  // 1) Paste your Apps Script Web App URL here (ends with /exec)
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
+
+  // 2) WhatsApp group invite link (shown after a successful submission)
+  WHATSAPP_GROUP: "",
+
+  BRAND: "Translitmedia",
+  PROJECT: "Indonesian Reading Recording",
+  CONTACT_NAME: "SIYAM",
+  CONTACT_ROLE: "Operational Manager",
+  CONTACT_PHONE: "+8801600866444",
+
+  DEADLINE_EN: "5 December 2026",
+  DEADLINE_ID: "5 Desember 2026",
+
+  RATE_INDIVIDUAL: 10, // USD per participant for all 1,300 sentences
+  RATE_VENDOR: 13,     // USD per participant for all 1,300 sentences
+  TOTAL_SENTENCES: 1300,
+
+  PAYMENT_METHODS: ["USDT", "Binance Pay", "Payoneer"],
+
+  // 3) The 5 test sentences (client test file, column G "原始文本")
+  TEST_SENTENCES: [
+    { caseId: "20260717_03918", domain: "系统操控", text: "Saya mau ganti nada dering, buka pengaturannya." },
+    { caseId: "20260717_03197", domain: "通话", text: "Panggil ulang nomor yang baru terputus." },
+    { caseId: "20260803_03853", domain: "导航", text: "Navigasi dari Monas (Monumen Nasional) ke Tangkuban Perahu, tapi hindari Katedral Jakarta." },
+    { caseId: "20260810_00649", domain: "AIGC", text: "Bantu saya siapkan pesan permintaan maaf karena mengirim dokumen yang belum lengkap. Buat agar cocok dan siap dikirim lewat WhatsApp." },
+    { caseId: "20260803_06330", domain: "通用问答", text: "Tetangga saya dari kalangan mampu, tapi kok masih dapat bantuan sosial terus? Gimana cara melaporkannya, ya?" }
+  ],
+
+  // Quota shown on the page (the real limits live in the Apps Script)
+  QUOTA: {
+    "18-28": { M: 8, F: 7 },
+    "29-45": { M: 12, F: 13 },
+    "46-55": { M: 5, F: 5 }
+  },
+
+  // Audio rules (from the client spec)
+  AUDIO: {
+    SAMPLE_RATE: 16000,
+    MAX_EDGE_SILENCE: 1.5,  // seconds allowed before/after speech
+    TRIM_PADDING: 0.4,      // seconds of silence kept after auto-trim
+    PEAK_MIN: 3000,
+    PEAK_MAX: 20000,
+    NOISE_MAX: 300,
+    SNR_GOOD: 20,
+    SNR_MIN: 15,
+    MAX_SECONDS: 25
+  }
+};
+
+</script>
+<script>
+// =====================================================================
+//  Audio tools: resample to 16 kHz, analyse quality, trim silence, WAV encode
+//  Works in the browser and in Node (for testing).
+// =====================================================================
+(function (root) {
+  "use strict";
+
+  // Windowed-sinc resampler (anti-aliased) — Float32 in, Float32 out
+  // Uses a pre-computed kernel table (512 phases) so it runs fast on phones.
+  function resample(input, fromRate, toRate) {
+    if (fromRate === toRate) return Float32Array.from(input);
+    var ratio = fromRate / toRate;
+    var outLen = Math.floor(input.length / ratio);
+    var out = new Float32Array(outLen);
+    var cutoff = Math.min(1, toRate / fromRate) * 0.92;
+    var half = Math.ceil(16 * Math.max(1, ratio));
+    var taps = half * 2;
+    var PH = 512;
+    var table = new Float32Array((PH + 1) * taps);
+    for (var ph = 0; ph <= PH; ph++) {
+      var frac = ph / PH;
+      for (var j = 0; j < taps; j++) {
+        var d = frac + (half - 1 - j); // distance t - k
+        var x = d * cutoff;
+        var sinc = x === 0 ? 1 : Math.sin(Math.PI * x) / (Math.PI * x);
+        var w = Math.abs(d) >= half ? 0 : 0.5 + 0.5 * Math.cos(Math.PI * d / half);
+        table[ph * taps + j] = sinc * w;
+      }
+    }
+    var last = input.length - 1;
+    for (var n = 0; n < outLen; n++) {
+      var t = n * ratio;
+      var center = Math.floor(t);
+      var base = Math.round((t - center) * PH) * taps;
+      var k0 = center - half + 1;
+      var sum = 0, wsum = 0;
+      for (var jj = 0; jj < taps; jj++) {
+        var k = k0 + jj;
+        if (k < 0 || k > last) continue;
+        var c = table[base + jj];
+        sum += input[k] * c;
+        wsum += c;
+      }
+      out[n] = wsum ? sum / wsum : 0;
+    }
+    return out;
+  }
+
+  // Analyse a Float32 (-1..1) mono signal. Levels are reported in 16-bit sample units.
+  function analyze(samples, sr, A) {
+    var S = 32767;
+    var frame = Math.round(0.02 * sr);
+    var nFrames = Math.floor(samples.length / frame);
+    var res = { checks: [], status: "fail", gainApplied: 1 };
+
+    if (nFrames < 25) {
+      res.checks.push({ key: "length", ok: false, level: "fail" });
+      res.error = "too_short";
+      return res;
+    }
+
+    var rms = new Float64Array(nFrames);
+    for (var f = 0; f < nFrames; f++) {
+      var acc = 0;
+      for (var i = f * frame; i < (f + 1) * frame; i++) { var v = samples[i] * S; acc += v * v; }
+      rms[f] = Math.sqrt(acc / frame);
+    }
+
+    var sorted = Array.prototype.slice.call(rms).sort(function (a, b) { return a - b; });
+    var nLow = Math.max(3, Math.floor(nFrames * 0.1));
+    var noise = 0;
+    for (var a = 0; a < nLow; a++) noise += sorted[a];
+    noise /= nLow;
+    var maxRms = sorted[sorted.length - 1];
+    var thr = Math.max(noise * 3, maxRms * 0.08, 60);
+
+    var first = -1, last = -1;
+    for (var p = 0; p + 2 < nFrames; p++) {
+      if (rms[p] > thr && rms[p + 1] > thr && rms[p + 2] > thr) { first = p; break; }
+    }
+    for (var q = nFrames - 1; q - 2 >= 0; q--) {
+      if (rms[q] > thr && rms[q - 1] > thr && rms[q - 2] > thr) { last = q; break; }
+    }
+    if (first < 0 || last < first) {
+      res.error = "no_speech";
+      res.noise = Math.round(noise);
+      res.checks.push({ key: "speech", ok: false, level: "fail" });
+      return res;
+    }
+
+    var fd = frame / sr;
+    var lead = first * fd;
+    var trail = (nFrames - 1 - last) * fd;
+    var speechDur = (last - first + 1) * fd;
+
+    var sp = 0, spN = 0;
+    for (var r = first; r <= last; r++) if (rms[r] > thr) { sp += rms[r] * rms[r]; spN++; }
+    var speechRms = Math.sqrt(sp / Math.max(1, spN));
+
+    var peak = 0, clipped = 0;
+    for (var s = first * frame; s < (last + 1) * frame; s++) {
+      var av = Math.abs(samples[s] * S);
+      if (av > peak) peak = av;
+      if (av >= 32000) clipped++;
+    }
+
+    // Gentle level correction for quiet phones (max 4x, only if noise stays under limit)
+    var gain = 1;
+    if (peak > 0 && peak < A.PEAK_MIN) {
+      var g = Math.min(4, 9000 / peak);
+      if (noise * g < A.NOISE_MAX * 0.8) gain = g;
+    }
+
+    // Trim edges to padding
+    var pad = Math.round(A.TRIM_PADDING * sr);
+    var startS = Math.max(0, first * frame - pad);
+    var endS = Math.min(samples.length, (last + 1) * frame + pad);
+    var out = new Float32Array(endS - startS);
+    for (var o = 0; o < out.length; o++) {
+      var val = samples[startS + o] * gain;
+      out[o] = val > 1 ? 1 : val < -1 ? -1 : val;
+    }
+
+    var snr = 20 * Math.log10(speechRms / Math.max(noise, 1));
+    peak *= gain; noise *= gain;
+    var leadAfter = (first * frame - startS) / sr;
+    var trailAfter = (endS - (last + 1) * frame) / sr;
+
+    res.samples = out;
+    res.gainApplied = Math.round(gain * 100) / 100;
+    res.duration = out.length / sr;
+    res.speechDuration = speechDur;
+    res.leadOriginal = lead; res.trailOriginal = trail;
+    res.lead = leadAfter; res.trail = trailAfter;
+    res.peak = Math.round(peak);
+    res.noise = Math.round(noise);
+    res.snr = Math.round(snr * 10) / 10;
+    res.clipped = clipped;
+
+    function add(key, ok, level) { res.checks.push({ key: key, ok: ok, level: level }); }
+    add("format", true, "pass");
+    add("silence", leadAfter <= A.MAX_EDGE_SILENCE && trailAfter <= A.MAX_EDGE_SILENCE, leadAfter <= A.MAX_EDGE_SILENCE && trailAfter <= A.MAX_EDGE_SILENCE ? "pass" : "fail");
+    add("speech", speechDur >= 0.5, speechDur >= 0.5 ? "pass" : "fail");
+    if (clipped > 3) add("clipping", false, "fail");
+    var peakOk = res.peak >= A.PEAK_MIN && res.peak <= A.PEAK_MAX;
+    add(res.peak < A.PEAK_MIN ? "peak_low" : res.peak > A.PEAK_MAX ? "peak_high" : "peak", peakOk, peakOk ? "pass" : "fail");
+    add("noise", res.noise < A.NOISE_MAX, res.noise < A.NOISE_MAX ? "pass" : "fail");
+    var snrLevel = res.snr >= A.SNR_GOOD ? "pass" : res.snr >= A.SNR_MIN ? "warn" : "fail";
+    add("snr", snrLevel !== "fail", snrLevel);
+
+    var anyFail = res.checks.some(function (c) { return c.level === "fail"; });
+    var anyWarn = res.checks.some(function (c) { return c.level === "warn"; });
+    res.status = anyFail ? "fail" : anyWarn ? "warn" : "pass";
+    return res;
+  }
+
+  // 16-bit PCM mono WAV
+  function encodeWAV(samples, sr) {
+    var buf = new ArrayBuffer(44 + samples.length * 2);
+    var v = new DataView(buf);
+    function w(o, s) { for (var i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); }
+    w(0, "RIFF"); v.setUint32(4, 36 + samples.length * 2, true); w(8, "WAVE");
+    w(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+    w(36, "data"); v.setUint32(40, samples.length * 2, true);
+    for (var i = 0, o = 44; i < samples.length; i++, o += 2) {
+      var s = Math.max(-1, Math.min(1, samples[i]));
+      v.setInt16(o, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+    }
+    return buf;
+  }
+
+  var api = { resample: resample, analyze: analyze, encodeWAV: encodeWAV };
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+  else root.AudioTools = api;
+})(this);
+
+</script>
+<script>
+(function () {
+  "use strict";
+  var C = window.CONFIG, A = C.AUDIO;
+  var params = new URLSearchParams(location.search);
+  var DEBUG = params.get("debug") === "1";
+  var VENDOR_PARAM = (params.get("vendor") || "").trim();
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ------------------------------------------------------------------ TEXT
+  var T = {
+    en: {
+      hero_tag: "Now hiring · Indonesia",
+      hero_title: "Indonesian Reading Recording Project",
+      hero_sub: "Read 1,300 short Indonesian sentences aloud on your phone and get paid. For native speakers aged 18–55.",
+      cta: "Apply and take the test",
+      f_ind: "Individual", f_ven: "Vendor",
+      f_rate_n: "per person · all 1,300 sentences",
+      f_rate_nv: "per team member · all 1,300 sentences",
+      f_time: "Time needed", f_time_v: "3–5 hours", f_time_n: "in total, at your own pace",
+      f_deadline: "Deadline", f_deadline_n: "all recordings finished",
+      f_device: "Phone", f_device_n: "other brands are not accepted",
+      how_title: "How it works",
+      how_lead: "Everyone takes a short test before the full recording.",
+      how1: "Register with your details",
+      how2: "Record 5 test sentences on this page",
+      how3: "We check your audio quality",
+      how4: "Pass and receive the full 1,300-sentence script",
+      how5: "Finish all sentences and get paid after the quality check",
+      req_title: "Requirements", req_lead: "Please read carefully before you apply.",
+      req1: "Indonesian native speaker using standard Indonesian (no imitated accent)",
+      req2: "Age 18–55, male or female",
+      req3: "Huawei, Apple (iPhone) or Samsung phone only",
+      req4: "Quiet room with no echo, TV, fan or traffic noise",
+      req5: "Hold the phone about 20 cm from your mouth",
+      req6: "Read at normal speed in your normal voice",
+      req7: "Do not record when you have a cold or a hoarse voice",
+      req8: "One person = one registration. Voiceprints are checked",
+      imp_title: "Important:",
+      imp_text: "You must record all 1,300 sentences. Partial work is not paid.",
+      quota_title: "Open slots",
+      quota_lead: "We need a balanced team by age and gender. Full groups close automatically.",
+      th_age: "Age group", th_m: "Male", th_f: "Female",
+      open: "Open", full: "Full",
+      ven_title: "For vendors",
+      ven_text: "Every team member must register and pass the test on their own phone. Create your team link and share it with your members. Each registration through the link is counted under your vendor name.",
+      ven_name: "Vendor / team name", ven_btn: "Create my team link", copy: "Copy", copied: "Copied",
+      apply_title: "Apply and take the test",
+      apply_lead: "It takes about 10 minutes. Use your phone in a quiet room.",
+      s1: "Step 1 of 4 · Your details", s2: "Step 2 of 4 · Room check", s3: "Step 3 of 4 · Test recording", s4: "Step 4 of 4 · Submit",
+      type_l: "I am applying as", type_ind: "Individual", type_ven: "Vendor team member",
+      v_name: "Vendor / team name", v_wa: "Vendor WhatsApp",
+      full_name: "Full name", gender: "Gender", choose: "Choose…", male: "Male", female: "Female",
+      age: "Age", country: "Country", city: "Province / City",
+      wa: "WhatsApp number", email: "Email",
+      brand: "Phone brand", model: "Phone model", model_h: "e.g. iPhone 13, Galaxy A54, Nova 11",
+      pay: "Payment method", pay_id: "Payment ID / wallet address",
+      c1: "I will record all 1,300 sentences myself. I understand that partial work is not paid.",
+      c2: "These recordings are my own voice only and I have not registered before.",
+      next: "Continue", back: "Back",
+      room_title: "Check your room",
+      room_text: "Go to a quiet room and hold your phone about 20 cm from your mouth. Tap the button and stay completely silent for 3 seconds.",
+      g1: "Turn off the fan, TV and music", g2: "Close windows and doors", g3: "Avoid empty rooms with echo", g4: "Do not hold the phone too close to your mouth",
+      room_btn: "Start room check", room_listen: "Stay silent…",
+      room_ok: "Your room is quiet enough. Background noise: {n}",
+      room_bad: "Too much background noise ({n}). Move to a quieter place and try again.",
+      mic_denied: "Microphone access is blocked. Allow the microphone for this site in your browser settings and reload the page.",
+      desktop: "Please open this page on your Huawei, Apple or Samsung phone. Recordings from a computer are not accepted.",
+      test_text: "Read each sentence exactly as written at normal speed. Tap Record, wait a moment, read the sentence, then tap Stop. All 5 sentences must pass.",
+      sentence: "SENTENCE", rec: "Record", stop: "Stop", rerec: "Record again", checking: "Checking…",
+      ck_format: "16 kHz · 16-bit · mono WAV", ck_silence: "Silence at edges", ck_speech: "Speech length",
+      ck_clipping: "Distortion — move the phone further away", ck_peak: "Volume {v}",
+      ck_peak_low: "Too quiet ({v}) — speak a little louder", ck_peak_high: "Too loud ({v}) — move the phone a little further",
+      ck_noise: "Background noise {v}", ck_snr: "Voice clarity {v} dB",
+      ck_no_speech: "No voice detected — try again", ck_too_short: "Recording is too short",
+      st_pass: "Passed", st_warn: "Passed (borderline — re-recording is better)", st_fail: "Not passed — please record again",
+      need_all: "All 5 sentences must pass before you continue.",
+      sub_text: "Check your details and send your test.",
+      submit: "Submit my test", sending: "Uploading… keep this page open",
+      sm_name: "Name", sm_type: "Type", sm_vendor: "Vendor", sm_gender: "Gender", sm_age: "Age", sm_city: "City", sm_wa: "WhatsApp", sm_device: "Phone", sm_tests: "Test",
+      sm_tests_v: "5 of 5 passed",
+      done_title: "Test submitted!",
+      done_text: "Your applicant ID is {id}. We will check your recordings and contact you on WhatsApp.",
+      wa_btn: "Join the WhatsApp group (required)", wa_hint: "You must join the group to receive the script and updates.",
+      e_required: "Please fill in all fields and tick both boxes.",
+      e_age: "Age must be between 18 and 55.",
+      e_full: "Sorry, the {g} group for age {a} is full.",
+      e_dup: "You are already registered with this WhatsApp number or email.",
+      e_net: "Upload failed. Check your internet connection and try again.",
+      e_cfg: "The portal is not connected yet. Please contact the project manager.",
+      e_dev: "Your phone looks like {m}. Only Huawei, Apple or Samsung are accepted.",
+      q_ok: "Slots available for your group.",
+      contact: "Contact"
+    },
+    id: {
+      hero_tag: "Lowongan dibuka · Indonesia",
+      hero_title: "Proyek Rekaman Membaca Bahasa Indonesia",
+      hero_sub: "Bacakan 1.300 kalimat pendek bahasa Indonesia lewat HP Anda dan dapatkan bayaran. Untuk penutur asli usia 18–55 tahun.",
+      cta: "Daftar dan ikuti tes",
+      f_ind: "Individu", f_ven: "Vendor",
+      f_rate_n: "per orang · semua 1.300 kalimat",
+      f_rate_nv: "per anggota tim · semua 1.300 kalimat",
+      f_time: "Waktu", f_time_v: "3–5 jam", f_time_n: "total, sesuai waktu luang Anda",
+      f_deadline: "Batas waktu", f_deadline_n: "semua rekaman selesai",
+      f_device: "HP", f_device_n: "merek lain tidak diterima",
+      how_title: "Cara kerja",
+      how_lead: "Semua peserta mengikuti tes singkat sebelum rekaman penuh.",
+      how1: "Daftar dengan data diri Anda",
+      how2: "Rekam 5 kalimat tes di halaman ini",
+      how3: "Kami memeriksa kualitas audio Anda",
+      how4: "Lulus dan terima naskah lengkap 1.300 kalimat",
+      how5: "Selesaikan semua kalimat dan terima bayaran setelah pemeriksaan kualitas",
+      req_title: "Persyaratan", req_lead: "Mohon baca dengan teliti sebelum mendaftar.",
+      req1: "Penutur asli bahasa Indonesia baku (tidak meniru logat)",
+      req2: "Usia 18–55 tahun, pria atau wanita",
+      req3: "Hanya HP Huawei, Apple (iPhone) atau Samsung",
+      req4: "Ruangan tenang tanpa gema, suara TV, kipas atau lalu lintas",
+      req5: "Pegang HP sekitar 20 cm dari mulut",
+      req6: "Baca dengan kecepatan normal dan suara biasa",
+      req7: "Jangan merekam saat flu atau suara serak",
+      req8: "Satu orang = satu pendaftaran. Sidik suara akan diperiksa",
+      imp_title: "Penting:",
+      imp_text: "Anda wajib merekam semua 1.300 kalimat. Pekerjaan yang tidak selesai tidak dibayar.",
+      quota_title: "Slot tersedia",
+      quota_lead: "Kami membutuhkan tim yang seimbang berdasarkan usia dan jenis kelamin. Kelompok yang penuh akan ditutup otomatis.",
+      th_age: "Kelompok usia", th_m: "Pria", th_f: "Wanita",
+      open: "Buka", full: "Penuh",
+      ven_title: "Untuk vendor",
+      ven_text: "Setiap anggota tim wajib mendaftar dan lulus tes dengan HP masing-masing. Buat link tim Anda lalu bagikan ke anggota. Setiap pendaftaran lewat link tersebut dihitung atas nama vendor Anda.",
+      ven_name: "Nama vendor / tim", ven_btn: "Buat link tim saya", copy: "Salin", copied: "Tersalin",
+      apply_title: "Daftar dan ikuti tes",
+      apply_lead: "Sekitar 10 menit. Gunakan HP Anda di ruangan yang tenang.",
+      s1: "Langkah 1 dari 4 · Data diri", s2: "Langkah 2 dari 4 · Cek ruangan", s3: "Langkah 3 dari 4 · Rekaman tes", s4: "Langkah 4 dari 4 · Kirim",
+      type_l: "Saya mendaftar sebagai", type_ind: "Individu", type_ven: "Anggota tim vendor",
+      v_name: "Nama vendor / tim", v_wa: "WhatsApp vendor",
+      full_name: "Nama lengkap", gender: "Jenis kelamin", choose: "Pilih…", male: "Pria", female: "Wanita",
+      age: "Usia", country: "Negara", city: "Provinsi / Kota",
+      wa: "Nomor WhatsApp", email: "Email",
+      brand: "Merek HP", model: "Tipe HP", model_h: "contoh: iPhone 13, Galaxy A54, Nova 11",
+      pay: "Metode pembayaran", pay_id: "ID pembayaran / alamat wallet",
+      c1: "Saya akan merekam sendiri semua 1.300 kalimat. Saya mengerti bahwa pekerjaan yang tidak selesai tidak dibayar.",
+      c2: "Rekaman ini hanya suara saya sendiri dan saya belum pernah mendaftar sebelumnya.",
+      next: "Lanjut", back: "Kembali",
+      room_title: "Cek ruangan Anda",
+      room_text: "Masuk ke ruangan yang tenang dan pegang HP sekitar 20 cm dari mulut. Tekan tombol lalu diam sepenuhnya selama 3 detik.",
+      g1: "Matikan kipas, TV dan musik", g2: "Tutup jendela dan pintu", g3: "Hindari ruangan kosong yang bergema", g4: "Jangan pegang HP terlalu dekat dengan mulut",
+      room_btn: "Mulai cek ruangan", room_listen: "Tetap diam…",
+      room_ok: "Ruangan Anda cukup tenang. Kebisingan: {n}",
+      room_bad: "Terlalu bising ({n}). Pindah ke tempat yang lebih tenang lalu coba lagi.",
+      mic_denied: "Akses mikrofon diblokir. Izinkan mikrofon untuk situs ini di pengaturan browser lalu muat ulang halaman.",
+      desktop: "Silakan buka halaman ini di HP Huawei, Apple atau Samsung Anda. Rekaman dari komputer tidak diterima.",
+      test_text: "Bacakan setiap kalimat persis seperti tertulis dengan kecepatan normal. Tekan Rekam, tunggu sebentar, baca kalimatnya, lalu tekan Stop. Kelima kalimat harus lulus.",
+      sentence: "KALIMAT", rec: "Rekam", stop: "Stop", rerec: "Rekam ulang", checking: "Memeriksa…",
+      ck_format: "WAV 16 kHz · 16-bit · mono", ck_silence: "Jeda di awal/akhir", ck_speech: "Panjang ucapan",
+      ck_clipping: "Suara pecah — jauhkan HP sedikit", ck_peak: "Volume {v}",
+      ck_peak_low: "Terlalu pelan ({v}) — bicara sedikit lebih keras", ck_peak_high: "Terlalu keras ({v}) — jauhkan HP sedikit",
+      ck_noise: "Kebisingan {v}", ck_snr: "Kejernihan suara {v} dB",
+      ck_no_speech: "Suara tidak terdeteksi — coba lagi", ck_too_short: "Rekaman terlalu pendek",
+      st_pass: "Lulus", st_warn: "Lulus (batas bawah — sebaiknya rekam ulang)", st_fail: "Tidak lulus — silakan rekam ulang",
+      need_all: "Kelima kalimat harus lulus sebelum melanjutkan.",
+      sub_text: "Periksa data Anda lalu kirim tes Anda.",
+      submit: "Kirim tes saya", sending: "Mengunggah… jangan tutup halaman ini",
+      sm_name: "Nama", sm_type: "Tipe", sm_vendor: "Vendor", sm_gender: "Jenis kelamin", sm_age: "Usia", sm_city: "Kota", sm_wa: "WhatsApp", sm_device: "HP", sm_tests: "Tes",
+      sm_tests_v: "5 dari 5 lulus",
+      done_title: "Tes terkirim!",
+      done_text: "ID pendaftar Anda: {id}. Kami akan memeriksa rekaman Anda dan menghubungi Anda lewat WhatsApp.",
+      wa_btn: "Gabung grup WhatsApp (wajib)", wa_hint: "Anda wajib bergabung ke grup untuk menerima naskah dan informasi.",
+      e_required: "Mohon isi semua kolom dan centang kedua kotak.",
+      e_age: "Usia harus antara 18 dan 55 tahun.",
+      e_full: "Maaf, kelompok {g} usia {a} sudah penuh.",
+      e_dup: "Anda sudah terdaftar dengan nomor WhatsApp atau email ini.",
+      e_net: "Gagal mengunggah. Periksa koneksi internet lalu coba lagi.",
+      e_cfg: "Portal belum terhubung. Silakan hubungi manajer proyek.",
+      e_dev: "HP Anda terdeteksi sebagai {m}. Hanya Huawei, Apple atau Samsung yang diterima.",
+      q_ok: "Slot masih tersedia untuk kelompok Anda.",
+      contact: "Kontak"
+    }
+  };
+  var lang = "en";
+  try { lang = localStorage.getItem("lang") || (/^id/i.test(navigator.language) ? "id" : "en"); } catch (e) {}
+  function t(k, vars) {
+    var s = (T[lang] && T[lang][k]) || T.en[k] || k;
+    if (vars) Object.keys(vars).forEach(function (x) { s = s.replace("{" + x + "}", vars[x]); });
+    return s;
+  }
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
+    document.querySelectorAll(".lang button").forEach(function (b) { b.classList.toggle("on", b.dataset.lang === lang); });
+    $("deadline").textContent = lang === "id" ? C.DEADLINE_ID : C.DEADLINE_EN;
+    renderQuota(); renderSentences(); if (currentStep === 4) renderSummary();
+  }
+  document.querySelectorAll(".lang button").forEach(function (b) {
+    b.onclick = function () { lang = b.dataset.lang; try { localStorage.setItem("lang", lang); } catch (e) {} applyLang(); };
+  });
+
+  // ------------------------------------------------------------------ STATIC
+  document.title = C.PROJECT + " · " + C.BRAND;
+  $("brandName").textContent = C.BRAND;
+  $("brandFoot").textContent = "© " + new Date().getFullYear() + " " + C.BRAND;
+  $("rateInd").textContent = "$" + C.RATE_INDIVIDUAL;
+  $("rateVen").textContent = "$" + C.RATE_VENDOR;
+  $("segInd").textContent = "$" + C.RATE_INDIVIDUAL + " / 1,300";
+  $("segVen").textContent = "$" + C.RATE_VENDOR + " / 1,300";
+  $("contactLine").textContent = C.CONTACT_NAME + ", " + C.CONTACT_ROLE + " · " + C.CONTACT_PHONE;
+  C.PAYMENT_METHODS.forEach(function (m) { var o = document.createElement("option"); o.textContent = m; $("payMethod").appendChild(o); });
+
+  // ------------------------------------------------------------------ QUOTA
+  var quota = { counts: null, caps: null };
+  function ageGroup(a) { a = +a; return a >= 18 && a <= 28 ? "18-28" : a >= 29 && a <= 45 ? "29-45" : a >= 46 && a <= 55 ? "46-55" : ""; }
+  function isFull(g, gen) {
+    if (!quota.counts || !quota.caps) return false;
+    var k = gen === "Male" ? "M" : "F";
+    return (quota.counts[g] && quota.counts[g][k] || 0) >= (quota.caps[g] && quota.caps[g][k] || Infinity);
+  }
+  function renderQuota() {
+    var b = $("quotaBody"); b.innerHTML = "";
+    Object.keys(C.QUOTA).forEach(function (g) {
+      var tr = document.createElement("tr");
+      var td0 = document.createElement("td"); td0.textContent = g; td0.style.fontWeight = "700"; tr.appendChild(td0);
+      ["Male", "Female"].forEach(function (gen) {
+        var td = document.createElement("td");
+        var full = isFull(g, gen);
+        var span = document.createElement("span");
+        span.className = "pill " + (full ? "full" : "open");
+        span.textContent = full ? t("full") : t("open");
+        td.appendChild(span);
+        tr.appendChild(td);
+      });
+      b.appendChild(tr);
+    });
+  }
+  function loadQuota() {
+    if (!C.SCRIPT_URL) return;
+    fetch(C.SCRIPT_URL + "?action=quota").then(function (r) { return r.json(); }).then(function (j) {
+      if (j && j.ok) { quota.counts = j.counts; quota.caps = j.caps; renderQuota(); checkQuotaField(); }
+    }).catch(function () {});
+  }
+
+  // ------------------------------------------------------------------ VENDOR LINK
+  $("vlMake").onclick = function () {
+    var n = $("vlName").value.trim(); if (!n) { $("vlName").focus(); return; }
+    var url = location.origin + location.pathname + "?vendor=" + encodeURIComponent(n) + "#apply";
+    $("vlOut").value = url; $("vlBox").style.display = "flex";
+  };
+  $("vlCopy").onclick = function () {
+    var v = $("vlOut"); v.select();
+    (navigator.clipboard ? navigator.clipboard.writeText(v.value) : Promise.reject()).catch(function () { document.execCommand("copy"); });
+    $("vlCopy").textContent = t("copied"); setTimeout(function () { $("vlCopy").textContent = t("copy"); }, 1500);
+  };
+
+  // ------------------------------------------------------------------ FORM STEP 1
+  function typeVal() { return document.querySelector("input[name=type]:checked").value; }
+  function syncType() {
+    var v = typeVal() === "Vendor";
+    $("vendorFields").style.display = v ? "block" : "none";
+  }
+  document.querySelectorAll("input[name=type]").forEach(function (r) { r.onchange = syncType; });
+  if (VENDOR_PARAM) {
+    document.querySelector("input[value=Vendor]").checked = true;
+    document.querySelector("input[value=Individual]").disabled = true;
+    $("vendorName").value = VENDOR_PARAM; $("vendorName").readOnly = true;
+    var bn = $("vendorBanner"); bn.style.display = "block";
+    bn.textContent = (lang === "id" ? "Mendaftar di bawah vendor: " : "Registering under vendor: ") + VENDOR_PARAM;
+    $("payRow").style.display = "none"; // vendor pays its own members
+  }
+  syncType();
+
+  function checkQuotaField() {
+    var m = $("quotaMsg"), g = ageGroup($("age").value), gen = $("gender").value;
+    m.className = "msg";
+    if (!g || !gen) return true;
+    if (isFull(g, gen)) { m.className = "msg err show"; m.textContent = t("e_full", { g: t(gen === "Male" ? "male" : "female"), a: g }); return false; }
+    if (quota.counts) { m.className = "msg ok show"; m.textContent = t("q_ok"); }
+    return true;
+  }
+  $("age").oninput = checkQuotaField; $("gender").onchange = checkQuotaField;
+
+  // Device detection (soft check, recorded for QC)
+  var detected = { model: "", platform: "", mobile: /Android|iPhone|iPod/i.test(navigator.userAgent) };
+  if (/iPhone/i.test(navigator.userAgent)) detected.model = "iPhone";
+  if (navigator.userAgentData) {
+    detected.mobile = detected.mobile || navigator.userAgentData.mobile;
+    if (navigator.userAgentData.getHighEntropyValues) {
+      navigator.userAgentData.getHighEntropyValues(["model", "platform"]).then(function (v) {
+        detected.model = v.model || detected.model; detected.platform = v.platform || ""; checkDevice();
+      }).catch(function () {});
+    }
+  }
+  var OTHER_BRANDS = /redmi|xiaomi|poco|^M2\d|oppo|^CPH|vivo|^V2\d{3}|infinix|tecno|realme|^RMX|nokia|pixel|motorola|moto |honor|itel|oneplus|lenovo|asus|^ZTE/i;
+  function checkDevice() {
+    var m = $("deviceMsg");
+    if (detected.model && OTHER_BRANDS.test(detected.model)) { m.className = "msg warn show"; m.textContent = t("e_dev", { m: detected.model }); }
+    else m.className = "msg warn";
+  }
+
+  function val(id) { return $(id).value.trim(); }
+  function err(id, k) { var e = $(id); e.textContent = k ? t(k) : ""; e.className = "msg err" + (k ? " show" : ""); }
+  $("next1").onclick = function () {
+    var vendor = typeVal() === "Vendor";
+    var need = ["fullName", "gender", "age", "city", "wa", "email", "brand", "model"];
+    if (vendor) need.push("vendorName", "vendorWa");
+    if (!VENDOR_PARAM) need.push("payId");
+    var miss = need.some(function (id) { return !val(id); }) || !$("c1").checked || !$("c2").checked;
+    if (miss) return err("err1", "e_required");
+    if (!ageGroup(val("age"))) return err("err1", "e_age");
+    if (!checkQuotaField()) return err("err1", null);
+    err("err1", null); go(2);
+  };
+
+  // ------------------------------------------------------------------ STEPPER
+  var currentStep = 1;
+  function go(n) {
+    currentStep = n;
+    document.querySelectorAll(".panel").forEach(function (p) { p.classList.toggle("on", +p.dataset.step === n); });
+    document.querySelectorAll(".stepper div").forEach(function (d, i) { d.classList.toggle("on", i < n); });
+    if (n === 2 && !detected.mobile && !DEBUG) { var m = $("roomMsg"); m.className = "msg err show"; m.textContent = t("desktop"); $("roomBtn").disabled = true; }
+    if (n === 4) renderSummary();
+    $("apply").scrollIntoView({ behavior: "smooth" });
+  }
+  document.querySelectorAll("[data-back]").forEach(function (b) { b.onclick = function () { go(+b.dataset.back); }; });
+
+  // ------------------------------------------------------------------ AUDIO CAPTURE
+  var ctx = null, stream = null, active = null;
+  function getMic() {
+    if (stream) return Promise.resolve(stream);
+    return navigator.mediaDevices.getUserMedia({
+      audio: { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+    }).then(function (s) { stream = s; return s; });
+  }
+  function startCapture(onLevel) {
+    return getMic().then(function (s) {
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      return ctx.resume().then(function () {
+        var src = ctx.createMediaStreamSource(s);
+        var proc = ctx.createScriptProcessor(4096, 1, 1);
+        var mute = ctx.createGain(); mute.gain.value = 0;
+        var chunks = [];
+        proc.onaudioprocess = function (e) {
+          var d = e.inputBuffer.getChannelData(0);
+          chunks.push(new Float32Array(d));
+          if (onLevel) { var m = 0; for (var i = 0; i < d.length; i += 8) { var a = Math.abs(d[i]); if (a > m) m = a; } onLevel(m); }
+        };
+        src.connect(proc); proc.connect(mute); mute.connect(ctx.destination);
+        active = { src: src, proc: proc, mute: mute, chunks: chunks, rate: ctx.sampleRate };
+        return active;
+      });
+    });
+  }
+  function stopCapture() {
+    var a = active; active = null;
+    if (!a) return null;
+    a.src.disconnect(); a.proc.disconnect(); a.mute.disconnect();
+    var len = a.chunks.reduce(function (n, c) { return n + c.length; }, 0);
+    var all = new Float32Array(len), o = 0;
+    a.chunks.forEach(function (c) { all.set(c, o); o += c.length; });
+    return AudioTools.resample(all, a.rate, A.SAMPLE_RATE);
+  }
+
+  // ------------------------------------------------------------------ STEP 2 ROOM CHECK
+  var roomNoise = null;
+  $("roomBtn").onclick = function () {
+    var btn = $("roomBtn"), msg = $("roomMsg"), meter = $("roomMeter");
+    btn.disabled = true; btn.lastChild.textContent = t("room_listen"); meter.style.display = "block";
+    startCapture(function (lv) { meter.firstChild.style.width = Math.min(100, lv * 400) + "%"; }).then(function () {
+      setTimeout(function () {
+        var s = stopCapture();
+        meter.style.display = "none"; btn.disabled = false; btn.lastChild.textContent = t("room_btn");
+        var frame = 320, frames = [];
+        for (var f = 8; (f + 1) * frame <= s.length; f++) { // skip first 160 ms (button tap)
+          var acc = 0; for (var i = f * frame; i < (f + 1) * frame; i++) { var v = s[i] * 32767; acc += v * v; }
+          frames.push(Math.sqrt(acc / frame));
+        }
+        frames.sort(function (a, b) { return a - b; });
+        var mid = frames.slice(0, Math.max(1, Math.floor(frames.length * 0.8)));
+        roomNoise = Math.round(mid.reduce(function (a, b) { return a + b; }, 0) / mid.length);
+        var ok = roomNoise < A.NOISE_MAX;
+        msg.className = "msg show " + (ok ? "ok" : "err");
+        msg.textContent = t(ok ? "room_ok" : "room_bad", { n: roomNoise });
+        $("next2").disabled = !ok;
+      }, 3000);
+    }).catch(function () { btn.disabled = false; btn.lastChild.textContent = t("room_btn"); msg.className = "msg err show"; msg.textContent = t("mic_denied"); });
+  };
+  $("next2").onclick = function () { go(3); };
+
+  // ------------------------------------------------------------------ STEP 3 TEST
+  var results = C.TEST_SENTENCES.map(function () { return null; });
+  var recIndex = -1, recTimer = null;
+
+  function chipText(c, r) {
+    switch (c.key) {
+      case "format": return t("ck_format");
+      case "silence": return t("ck_silence") + " " + r.lead.toFixed(1) + "s / " + r.trail.toFixed(1) + "s";
+      case "speech": return t("ck_speech") + " " + (r.speechDuration || 0).toFixed(1) + "s";
+      case "clipping": return t("ck_clipping");
+      case "peak": case "peak_low": case "peak_high": return t("ck_" + c.key, { v: r.peak });
+      case "noise": return t("ck_noise", { v: r.noise });
+      case "snr": return t("ck_snr", { v: r.snr });
+      case "no_speech": return t("ck_no_speech");
+      default: return t("ck_" + c.key);
+    }
+  }
+
+  function renderSentences() {
+    var box = $("sentences"); if (!box) return;
+    box.innerHTML = "";
+    C.TEST_SENTENCES.forEach(function (item, i) {
+      var text = item.text;
+      var r = results[i];
+      var d = document.createElement("div");
+      d.className = "sent" + (r ? " " + (r.status === "fail" ? "fail" : "pass") : "");
+      var num = document.createElement("div"); num.className = "num"; num.textContent = t("sentence") + " " + (i + 1) + " / " + C.TEST_SENTENCES.length;
+      var tx = document.createElement("div"); tx.className = "txt"; tx.textContent = text;
+      var ctrl = document.createElement("div"); ctrl.className = "ctrl";
+      var btn = document.createElement("button");
+      var isRec = recIndex === i;
+      btn.className = "btn btn-sm " + (isRec ? "btn-dark recording" : "btn-red");
+      btn.innerHTML = '<span class="rec-dot"></span><span></span>';
+      btn.lastChild.textContent = isRec ? t("stop") : r ? t("rerec") : t("rec");
+      btn.disabled = recIndex >= 0 && !isRec;
+      btn.onclick = function () { isRec ? finishRec(i) : beginRec(i); };
+      ctrl.appendChild(btn);
+      if (r && r.url) { var au = document.createElement("audio"); au.controls = true; au.src = r.url; ctrl.appendChild(au); }
+      d.appendChild(num); d.appendChild(tx); d.appendChild(ctrl);
+      var meter = document.createElement("div"); meter.className = "meter"; meter.id = "m" + i; meter.innerHTML = "<i></i>";
+      if (isRec) meter.style.display = "block";
+      d.appendChild(meter);
+      if (r) {
+        var chips = document.createElement("div"); chips.className = "chips";
+        if (r.error) {
+          var ce = document.createElement("span"); ce.className = "chip fail"; ce.textContent = t("ck_" + r.error); chips.appendChild(ce);
+        } else r.checks.forEach(function (c) {
+          var s = document.createElement("span"); s.className = "chip " + c.level; s.textContent = chipText(c, r); chips.appendChild(s);
+        });
+        d.appendChild(chips);
+        var st = document.createElement("div"); st.className = "status " + r.status; st.textContent = t("st_" + r.status); d.appendChild(st);
+      }
+      box.appendChild(d);
+    });
+    var allOk = results.every(function (r) { return r && r.status !== "fail"; });
+    var n3 = $("next3"); if (n3) n3.disabled = !allOk || recIndex >= 0;
+  }
+
+  function beginRec(i) {
+    recIndex = i; renderSentences();
+    startCapture(function (lv) { var m = $("m" + i); if (m) m.firstChild.style.width = Math.min(100, lv * 140) + "%"; }).then(function () {
+      recTimer = setTimeout(function () { finishRec(i); }, A.MAX_SECONDS * 1000);
+    }).catch(function () { recIndex = -1; renderSentences(); err("err3", "mic_denied"); });
+  }
+  function finishRec(i) {
+    clearTimeout(recTimer);
+    var s = stopCapture(); recIndex = -1;
+    if (!s) { renderSentences(); return; }
+    var r = AudioTools.analyze(s, A.SAMPLE_RATE, A);
+    if (results[i] && results[i].url) URL.revokeObjectURL(results[i].url);
+    if (r.samples) {
+      r.wav = AudioTools.encodeWAV(r.samples, A.SAMPLE_RATE);
+      r.url = URL.createObjectURL(new Blob([r.wav], { type: "audio/wav" }));
+      delete r.samples;
+    }
+    results[i] = r; err("err3", null); renderSentences();
+  }
+  $("next3").onclick = function () {
+    if (!results.every(function (r) { return r && r.status !== "fail"; })) return err("err3", "need_all");
+    go(4);
+  };
+
+  // ------------------------------------------------------------------ STEP 4 SUBMIT
+  function renderSummary() {
+    var dl = $("summary"); dl.innerHTML = "";
+    var rows = [["sm_name", val("fullName")], ["sm_type", typeVal()]];
+    if (typeVal() === "Vendor") rows.push(["sm_vendor", val("vendorName")]);
+    rows.push(["sm_gender", t($("gender").value === "Male" ? "male" : "female")], ["sm_age", val("age")], ["sm_city", val("city")],
+      ["sm_wa", val("wa")], ["sm_device", val("brand") + " " + val("model")], ["sm_tests", t("sm_tests_v")]);
+    rows.forEach(function (r) {
+      var dt = document.createElement("dt"); dt.textContent = t(r[0]);
+      var dd = document.createElement("dd"); dd.textContent = r[1];
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+  }
+  function b64(buf) {
+    var bytes = new Uint8Array(buf), s = "", CH = 0x8000;
+    for (var i = 0; i < bytes.length; i += CH) s += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+    return btoa(s);
+  }
+  $("submitBtn").onclick = function () {
+    if (!C.SCRIPT_URL) return err("err4", "e_cfg");
+    var btn = $("submitBtn");
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span> ' + t("sending");
+    var payload = {
+      action: "submit",
+      type: typeVal(),
+      vendorName: typeVal() === "Vendor" ? val("vendorName") : "",
+      vendorWa: typeVal() === "Vendor" ? val("vendorWa") : "",
+      viaVendorLink: !!VENDOR_PARAM,
+      fullName: val("fullName"), gender: $("gender").value, age: +val("age"), ageGroup: ageGroup(val("age")),
+      country: "Indonesia", city: val("city"), whatsapp: val("wa"), email: val("email"),
+      brand: val("brand"), model: val("model"),
+      payMethod: VENDOR_PARAM ? "" : $("payMethod").value, payId: VENDOR_PARAM ? "" : val("payId"),
+      detectedModel: detected.model, userAgent: navigator.userAgent, roomNoise: roomNoise, lang: lang,
+      tests: results.map(function (r, i) {
+        return { index: i + 1, caseId: C.TEST_SENTENCES[i].caseId, domain: C.TEST_SENTENCES[i].domain, sentence: C.TEST_SENTENCES[i].text, status: r.status, peak: r.peak, noise: r.noise, snr: r.snr,
+          lead: +r.lead.toFixed(2), trail: +r.trail.toFixed(2), duration: +r.duration.toFixed(2), gain: r.gainApplied, wav: b64(r.wav) };
+      })
+    };
+    fetch(C.SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || "server");
+        $("doneText").textContent = t("done_text", { id: j.id });
+        if (C.WHATSAPP_GROUP) { var w = $("waBtn"); w.href = C.WHATSAPP_GROUP; w.style.display = "flex"; $("waHint").style.display = "block"; }
+        $("doneModal").classList.add("show");
+        btn.textContent = t("submit");
+      })
+      .catch(function (e) {
+        btn.disabled = false; btn.textContent = t("submit");
+        var m = String(e.message || "");
+        err("err4", m === "duplicate" ? "e_dup" : m === "quota_full" ? null : "e_net");
+        if (m === "quota_full") { var x = $("err4"); x.className = "msg err show"; x.textContent = t("e_full", { g: t($("gender").value === "Male" ? "male" : "female"), a: ageGroup(val("age")) }); loadQuota(); }
+      });
+  };
+
+  applyLang();
+  loadQuota();
+})();
+
+</script>
+</body>
+</html>
