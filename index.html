@@ -338,7 +338,7 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
-  VERSION: "v1.3 (strict noise)",
+  VERSION: "v1.4",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
@@ -383,9 +383,9 @@ window.CONFIG = {
     TRIM_PADDING: 0.4,      // seconds of silence kept after auto-trim
     PEAK_MIN: 3000,
     PEAK_MAX: 20000,
-    ROOM_NOISE_MAX: 30,     // room check: average noise must be below this
-    NOISE_GOOD: 50,         // recording noise: below = pass
-    NOISE_MAX: 100,         // recording noise: 50-100 = borderline, 100+ = fail (client limit is 300)
+    ROOM_NOISE_MAX: 50,     // room check: average noise must be below this
+    NOISE_GOOD: 80,         // recording noise: below = pass
+    NOISE_MAX: 150,         // recording noise: 80-150 = borderline, 150+ = fail (client limit is 300)
     SNR_GOOD: 20,
     SNR_MIN: 15,
     MAX_SECONDS: 25
@@ -976,7 +976,7 @@ window.CONFIG = {
         var s = stopCapture();
         meter.style.display = "none"; btn.disabled = false; btn.lastChild.textContent = t("room_btn");
         var frame = 320, frames = [];
-        for (var f = 8; (f + 1) * frame <= s.length; f++) { // skip first 160 ms (button tap)
+        for (var f = 20; (f + 1) * frame <= s.length - 3200; f++) { // skip first 400 ms and last 200 ms (button taps)
           var acc = 0; for (var i = f * frame; i < (f + 1) * frame; i++) { var v = s[i] * 32767; acc += v * v; }
           frames.push(Math.sqrt(acc / frame));
         }
@@ -984,8 +984,8 @@ window.CONFIG = {
         roomNoise = Math.round(frames.reduce(function (a, b) { return a + b; }, 0) / frames.length);
         var roomPeak = Math.max.apply(null, frames);
         var lim = A.ROOM_NOISE_MAX || A.NOISE_MAX;
-        var ok = roomNoise < lim && roomPeak < lim * 3;
-        if (roomPeak >= lim * 3) roomNoise = Math.max(roomNoise, Math.round(roomPeak / 3));
+        var ok = roomNoise < lim && roomPeak < lim * 4;
+        if (roomPeak >= lim * 4) roomNoise = Math.max(roomNoise, Math.round(roomPeak / 4));
         msg.className = "msg show " + (ok ? "ok" : "err");
         msg.textContent = t(ok ? "room_ok" : "room_bad", { n: roomNoise });
         $("next2").disabled = !ok;
