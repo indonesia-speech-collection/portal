@@ -202,6 +202,12 @@
         <ol class="steps" style="margin-bottom:18px">
           <li data-t="vs1"></li><li data-t="vs2"></li><li data-t="vs3"></li><li data-t="vs4"></li><li data-t="vs5"></li><li data-t="vs6"></li>
         </ol>
+        <div class="warnbox" style="margin:0 0 18px">
+          <b data-t="vn_title"></b>
+          <ul style="margin:8px 0 0;padding-left:18px">
+            <li data-t="vn1"></li><li data-t="vn2"></li><li data-t="vn3"></li><li data-t="vn4"></li><li data-t="vn5"></li>
+          </ul>
+        </div>
         <div class="field">
           <label class="l" for="vlName" data-t="ven_name"></label>
           <input id="vlName" autocomplete="organization">
@@ -227,8 +233,8 @@
 
   <section id="apply">
     <div class="wrap" style="max-width:720px">
-      <h2 data-t="apply_title"></h2>
-      <p class="lead" data-t="apply_lead"></p>
+      <h2 id="applyTitle" data-t="apply_title"></h2>
+      <p class="lead" id="applyLead" data-t="apply_lead"></p>
 
       <div class="card">
         <div class="banner" id="vendorBanner"></div>
@@ -237,19 +243,6 @@
         <!-- STEP 1: DETAILS -->
         <div class="panel on" data-step="1">
           <div class="stepname" data-t="s1"></div>
-          <div class="field" id="typeField">
-            <label class="l" data-t="type_l"></label>
-            <div class="seg">
-              <label><input type="radio" name="type" value="Individual" checked><span class="t" data-t="type_ind"></span><span class="s" id="segInd"></span></label>
-              <label><input type="radio" name="type" value="Vendor"><span class="t" data-t="type_ven"></span><span class="s" id="segVen"></span></label>
-            </div>
-          </div>
-          <div id="vendorFields" style="display:none">
-            <div class="row2">
-              <div class="field"><label class="l" for="vendorName" data-t="v_name"></label><input id="vendorName"></div>
-              <div class="field"><label class="l" for="vendorWa" data-t="v_wa"></label><input id="vendorWa" inputmode="tel" placeholder="+62"></div>
-            </div>
-          </div>
           <div class="field"><label class="l" for="fullName" data-t="full_name"></label><input id="fullName" autocomplete="name"></div>
           <div class="row2">
             <div class="field"><label class="l" for="gender" data-t="gender"></label>
@@ -339,7 +332,7 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
-  VERSION: "v1.8",
+  VERSION: "v1.9",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
@@ -640,23 +633,31 @@ window.CONFIG = {
       quota_lead: "We need a balanced team by age and gender. Full groups close automatically.",
       th_age: "Age group", th_m: "Male", th_f: "Female",
       open: "Open", full: "Full",
-      ven_title: "For vendors",
-      ven_text: "Every team member must register and pass the test on their own phone. Create your team link and share it with your members. Each registration through the link is counted under your vendor name.",
+      ven_title: "For vendors (team leaders)",
+      ven_text: "Do you manage a team of recorders? Don't fill in the application form yourself. Create one team link here and send it to your members. Everyone who applies through your link is counted under your team.",
       ven_name: "Vendor / team name", ven_btn: "Create my team link", copy: "Copy", copied: "Copied",
       ven_wa: "Your WhatsApp number", ven_group: "Your team WhatsApp group link",
       ven_group_h: "Members are sent to this group after they submit. Format: https://chat.whatsapp.com/...",
       ven_err: "Please enter your team name, WhatsApp number and a valid WhatsApp group link (https://chat.whatsapp.com/...).",
-      vs1: "Create a WhatsApp group for your team and copy its invite link",
-      vs2: "Fill in your team name, your WhatsApp number and the group link below",
-      vs3: "Tap “Create my team link” and copy the link",
-      vs4: "Share the link with your members. Each member opens it on their own Huawei, Apple or Samsung phone",
-      vs5: "Each member enters name, gender, age and phone model, then records the 5 test sentences. No contact or payment details are needed",
-      vs6: "After submitting, members join your group automatically. We send the test results and the full script to you",
+      vs1: "Create a WhatsApp group for your team members. Open the group → Group info → Invite via link → Copy link",
+      vs2: "Enter your team name, your own WhatsApp number and that group link in the boxes below",
+      vs3: "Tap “Create my team link”. A new link appears. Tap “Copy”",
+      vs4: "Send this team link to your members (not the normal page link)",
+      vs5: "Each member opens your team link on their own Huawei, Apple or Samsung phone, fills in name, gender, age and phone model and records the 5 test sentences",
+      vs6: "After submitting, members are sent to your WhatsApp group. We contact you, not your members, with test results, the full script and payment",
+      vn_title: "Please note",
+      vn1: "Create the link once and reuse it for your whole team. You can create it again any time with the same details.",
+      vn2: "If members use the normal page link instead of your team link, they are counted as individuals, not under your team.",
+      vn3: "Each member must record with their own voice on their own phone. One person cannot register twice.",
+      vn4: "Your members do not see rates or payment details. You manage and pay your own members.",
+      vn5: "Vendor rate: $13 per member who completes all 1,300 sentences, paid to you 45–60 days after the project is completed.",
+      apply_title_v: "Team member application",
+      apply_lead_v: "Fill in your details and record 5 test sentences. It takes about 10 minutes. Use your phone in a quiet room.",
       vbanner: "Registering under team: {v}",
       wa_btn_v: "Join your team WhatsApp group",
       wa_hint_v: "Join your team group to receive the script and updates.",
       apply_title: "Apply and take the test",
-      apply_lead: "It takes about 10 minutes. Use your phone in a quiet room.",
+      apply_lead: "For individuals. It takes about 10 minutes. Use your phone in a quiet room. Vendors: don't use this form, create your team link above.",
       s1: "Step 1 of 4 · Your details", s2: "Step 2 of 4 · Room check", s3: "Step 3 of 4 · Test recording", s4: "Step 4 of 4 · Submit",
       type_l: "I am applying as", type_ind: "Individual", type_ven: "Vendor team member",
       v_name: "Vendor / team name", v_wa: "Vendor WhatsApp",
@@ -737,23 +738,31 @@ window.CONFIG = {
       quota_lead: "Kami membutuhkan tim yang seimbang berdasarkan usia dan jenis kelamin. Kelompok yang penuh akan ditutup otomatis.",
       th_age: "Kelompok usia", th_m: "Pria", th_f: "Wanita",
       open: "Buka", full: "Penuh",
-      ven_title: "Untuk vendor",
-      ven_text: "Setiap anggota tim wajib mendaftar dan lulus tes dengan HP masing-masing. Buat link tim Anda lalu bagikan ke anggota. Setiap pendaftaran lewat link tersebut dihitung atas nama vendor Anda.",
+      ven_title: "Untuk vendor (ketua tim)",
+      ven_text: "Anda mengelola tim perekam? Jangan isi formulir pendaftaran sendiri. Buat satu link tim di sini lalu kirim ke anggota Anda. Semua yang mendaftar lewat link Anda dihitung atas nama tim Anda.",
       ven_name: "Nama vendor / tim", ven_btn: "Buat link tim saya", copy: "Salin", copied: "Tersalin",
       ven_wa: "Nomor WhatsApp Anda", ven_group: "Link grup WhatsApp tim Anda",
       ven_group_h: "Anggota akan diarahkan ke grup ini setelah mengirim tes. Format: https://chat.whatsapp.com/...",
       ven_err: "Mohon isi nama tim, nomor WhatsApp dan link grup WhatsApp yang benar (https://chat.whatsapp.com/...).",
-      vs1: "Buat grup WhatsApp untuk tim Anda lalu salin link undangannya",
-      vs2: "Isi nama tim, nomor WhatsApp Anda dan link grup di bawah",
-      vs3: "Tekan “Buat link tim saya” lalu salin link-nya",
-      vs4: "Bagikan link ke anggota. Setiap anggota membukanya di HP Huawei, Apple atau Samsung masing-masing",
-      vs5: "Setiap anggota mengisi nama, jenis kelamin, usia dan tipe HP, lalu merekam 5 kalimat tes. Tidak perlu data kontak atau pembayaran",
-      vs6: "Setelah mengirim, anggota otomatis bergabung ke grup Anda. Kami mengirim hasil tes dan naskah lengkap kepada Anda",
+      vs1: "Buat grup WhatsApp untuk anggota tim. Buka grup → Info grup → Undang via link → Salin link",
+      vs2: "Isi nama tim, nomor WhatsApp Anda sendiri dan link grup tersebut di kolom bawah",
+      vs3: "Tekan “Buat link tim saya”. Link baru akan muncul. Tekan “Salin”",
+      vs4: "Kirim link tim ini ke anggota Anda (bukan link halaman biasa)",
+      vs5: "Setiap anggota membuka link tim di HP Huawei, Apple atau Samsung masing-masing, mengisi nama, jenis kelamin, usia dan tipe HP lalu merekam 5 kalimat tes",
+      vs6: "Setelah mengirim, anggota diarahkan ke grup WhatsApp Anda. Kami menghubungi Anda, bukan anggota, untuk hasil tes, naskah lengkap dan pembayaran",
+      vn_title: "Harap diperhatikan",
+      vn1: "Buat link sekali saja lalu gunakan untuk seluruh tim. Anda bisa membuatnya lagi kapan saja dengan data yang sama.",
+      vn2: "Jika anggota memakai link halaman biasa, mereka dihitung sebagai individu, bukan anggota tim Anda.",
+      vn3: "Setiap anggota wajib merekam dengan suara sendiri di HP sendiri. Satu orang tidak boleh mendaftar dua kali.",
+      vn4: "Anggota Anda tidak melihat tarif atau info pembayaran. Anda yang mengatur dan membayar anggota Anda.",
+      vn5: "Tarif vendor: $13 per anggota yang menyelesaikan semua 1.300 kalimat, dibayarkan kepada Anda 45–60 hari setelah proyek selesai.",
+      apply_title_v: "Pendaftaran anggota tim",
+      apply_lead_v: "Isi data Anda dan rekam 5 kalimat tes. Sekitar 10 menit. Gunakan HP Anda di ruangan yang tenang.",
       vbanner: "Mendaftar di bawah tim: {v}",
       wa_btn_v: "Gabung grup WhatsApp tim Anda",
       wa_hint_v: "Gabung ke grup tim untuk menerima naskah dan informasi.",
       apply_title: "Daftar dan ikuti tes",
-      apply_lead: "Sekitar 10 menit. Gunakan HP Anda di ruangan yang tenang.",
+      apply_lead: "Untuk individu. Sekitar 10 menit. Gunakan HP Anda di ruangan yang tenang. Vendor: jangan pakai formulir ini, buat link tim di atas.",
       s1: "Langkah 1 dari 4 · Data diri", s2: "Langkah 2 dari 4 · Cek ruangan", s3: "Langkah 3 dari 4 · Rekaman tes", s4: "Langkah 4 dari 4 · Kirim",
       type_l: "Saya mendaftar sebagai", type_ind: "Individu", type_ven: "Anggota tim vendor",
       v_name: "Nama vendor / tim", v_wa: "WhatsApp vendor",
@@ -813,7 +822,10 @@ window.CONFIG = {
     document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
     document.querySelectorAll(".lang button").forEach(function (b) { b.classList.toggle("on", b.dataset.lang === lang); });
     $("deadline").textContent = lang === "id" ? C.DEADLINE_ID : C.DEADLINE_EN;
-    if (VMODE) $("vendorBanner").textContent = t("vbanner", { v: VENDOR_PARAM });
+    if (VMODE) {
+      $("vendorBanner").textContent = t("vbanner", { v: VENDOR_PARAM });
+      $("applyTitle").textContent = t("apply_title_v"); $("applyLead").textContent = t("apply_lead_v");
+    }
     renderQuota(); renderSentences(); if (currentStep === 4) renderSummary();
   }
   document.querySelectorAll(".lang button").forEach(function (b) {
@@ -826,8 +838,6 @@ window.CONFIG = {
   $("brandFoot").textContent = "© " + new Date().getFullYear() + " " + C.BRAND + (C.VERSION ? " · " + C.VERSION : "");
   $("rateInd").textContent = "$" + C.RATE_INDIVIDUAL;
   $("rateVen").textContent = "$" + C.RATE_VENDOR;
-  $("segInd").textContent = "$" + C.RATE_INDIVIDUAL + " / 1,300";
-  $("segVen").textContent = "$" + C.RATE_VENDOR + " / 1,300";
   $("contactLine").textContent = C.CONTACT_NAME + ", " + C.CONTACT_ROLE + " · " + C.CONTACT_PHONE;
   C.PAYMENT_METHODS.forEach(function (m) { var o = document.createElement("option"); o.textContent = m; $("payMethod").appendChild(o); });
 
@@ -880,21 +890,13 @@ window.CONFIG = {
   };
 
   // ------------------------------------------------------------------ FORM STEP 1
-  function typeVal() { return document.querySelector("input[name=type]:checked").value; }
-  function syncType() {
-    var v = typeVal() === "Vendor";
-    $("vendorFields").style.display = v ? "block" : "none";
-  }
-  document.querySelectorAll("input[name=type]").forEach(function (r) { r.onchange = syncType; });
+  function typeVal() { return VMODE ? "Vendor" : "Individual"; }
   if (VMODE) {
-    document.querySelector("input[value=Vendor]").checked = true;
-    $("vendorName").value = VENDOR_PARAM;
     $("vendorBanner").style.display = "block";
     // Members see no rates, no vendor tools and no contact/payment fields
-    ["factInd", "factVen", "factPay", "venCard", "typeField", "cityField", "contactRow", "payRow"].forEach(function (id) { $(id).style.display = "none"; });
+    ["factInd", "factVen", "factPay", "venCard", "cityField", "contactRow", "payRow"].forEach(function (id) { $(id).style.display = "none"; });
   }
-  syncType();
-  if (VMODE) $("vendorFields").style.display = "none";
+
 
   function checkQuotaField() {
     var m = $("quotaMsg"), g = ageGroup($("age").value), gen = $("gender").value;
@@ -927,9 +929,7 @@ window.CONFIG = {
   function val(id) { return $(id).value.trim(); }
   function err(id, k) { var e = $(id); e.textContent = k ? t(k) : ""; e.className = "msg err" + (k ? " show" : ""); }
   $("next1").onclick = function () {
-    var vendor = typeVal() === "Vendor";
     var need = VMODE ? ["fullName", "gender", "age", "brand", "model"] : ["fullName", "gender", "age", "city", "wa", "email", "brand", "model", "payId"];
-    if (vendor && !VMODE) need.push("vendorName", "vendorWa");
     var miss = need.some(function (id) { return !val(id); }) || !$("c1").checked || !$("c2").checked;
     if (miss) return err("err1", "e_required");
     if (!ageGroup(val("age"))) return err("err1", "e_age");
@@ -1100,7 +1100,7 @@ window.CONFIG = {
     var dl = $("summary"); dl.innerHTML = "";
     var rows = [["sm_name", val("fullName")]];
     if (!VMODE) rows.push(["sm_type", typeVal()]);
-    if (typeVal() === "Vendor") rows.push(["sm_vendor", val("vendorName")]);
+    if (VMODE) rows.push(["sm_vendor", VENDOR_PARAM]);
     rows.push(["sm_gender", t($("gender").value === "Male" ? "male" : "female")], ["sm_age", val("age")]);
     if (!VMODE) rows.push(["sm_city", val("city")], ["sm_wa", val("wa")]);
     rows.push(["sm_device", val("brand") + " " + val("model")], ["sm_tests", t("sm_tests_v")]);
@@ -1122,8 +1122,8 @@ window.CONFIG = {
     var payload = {
       action: "submit",
       type: typeVal(),
-      vendorName: typeVal() === "Vendor" ? val("vendorName") : "",
-      vendorWa: VMODE ? VENDOR_WA : typeVal() === "Vendor" ? val("vendorWa") : "",
+      vendorName: VMODE ? VENDOR_PARAM : "",
+      vendorWa: VMODE ? VENDOR_WA : "",
       vendorGroup: VMODE ? VENDOR_GROUP : "",
       viaVendorLink: VMODE,
       fullName: val("fullName"), gender: $("gender").value, age: +val("age"), ageGroup: ageGroup(val("age")),
