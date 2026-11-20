@@ -154,8 +154,8 @@
     <a href="#apply" class="btn btn-red" data-t="cta"></a>
 
     <div class="facts">
-      <div class="fact hl"><div class="k" data-t="f_ind"></div><div class="v" id="rateInd"></div><div class="n" data-t="f_rate_n"></div></div>
-      <div class="fact hl"><div class="k" data-t="f_ven"></div><div class="v" id="rateVen"></div><div class="n" data-t="f_rate_nv"></div></div>
+      <div class="fact hl" id="factInd"><div class="k" data-t="f_ind"></div><div class="v" id="rateInd"></div><div class="n" data-t="f_rate_n"></div></div>
+      <div class="fact hl" id="factVen"><div class="k" data-t="f_ven"></div><div class="v" id="rateVen"></div><div class="n" data-t="f_rate_nv"></div></div>
       <div class="fact"><div class="k" data-t="f_time"></div><div class="v" data-t="f_time_v"></div><div class="n" data-t="f_time_n"></div></div>
       <div class="fact"><div class="k" data-t="f_deadline"></div><div class="v" id="deadline" style="font-size:22px"></div><div class="n" data-t="f_deadline_n"></div></div>
       <div class="fact"><div class="k" data-t="f_device"></div><div class="v" style="font-size:18px">Huawei · Apple · Samsung</div><div class="n" data-t="f_device_n"></div></div>
@@ -195,13 +195,26 @@
           <tbody id="quotaBody"></tbody>
         </table>
       </div>
-      <div class="card">
+      <div class="card" id="venCard">
         <h2 data-t="ven_title"></h2>
         <p class="lead" data-t="ven_text"></p>
+        <ol class="steps" style="margin-bottom:18px">
+          <li data-t="vs1"></li><li data-t="vs2"></li><li data-t="vs3"></li><li data-t="vs4"></li><li data-t="vs5"></li><li data-t="vs6"></li>
+        </ol>
         <div class="field">
           <label class="l" for="vlName" data-t="ven_name"></label>
           <input id="vlName" autocomplete="organization">
         </div>
+        <div class="field">
+          <label class="l" for="vlWa" data-t="ven_wa"></label>
+          <input id="vlWa" inputmode="tel" placeholder="+62">
+        </div>
+        <div class="field">
+          <label class="l" for="vlGroup" data-t="ven_group"></label>
+          <input id="vlGroup" inputmode="url" placeholder="https://chat.whatsapp.com/...">
+          <span class="hint" data-t="ven_group_h"></span>
+        </div>
+        <div class="msg err" id="vlErr"></div>
         <button class="btn btn-dark btn-sm" id="vlMake" data-t="ven_btn"></button>
         <div class="vlink" id="vlBox" style="display:none">
           <input id="vlOut" readonly>
@@ -223,7 +236,7 @@
         <!-- STEP 1: DETAILS -->
         <div class="panel on" data-step="1">
           <div class="stepname" data-t="s1"></div>
-          <div class="field">
+          <div class="field" id="typeField">
             <label class="l" data-t="type_l"></label>
             <div class="seg">
               <label><input type="radio" name="type" value="Individual" checked><span class="t" data-t="type_ind"></span><span class="s" id="segInd"></span></label>
@@ -245,9 +258,9 @@
           <div class="msg" id="quotaMsg"></div>
           <div class="row2">
             <div class="field"><label class="l" for="country" data-t="country"></label><input id="country" value="Indonesia" readonly></div>
-            <div class="field"><label class="l" for="city" data-t="city"></label><input id="city"></div>
+            <div class="field" id="cityField"><label class="l" for="city" data-t="city"></label><input id="city"></div>
           </div>
-          <div class="row2">
+          <div class="row2" id="contactRow">
             <div class="field"><label class="l" for="wa" data-t="wa"></label><input id="wa" inputmode="tel" placeholder="+62" autocomplete="tel"></div>
             <div class="field"><label class="l" for="email" data-t="email"></label><input id="email" type="email" autocomplete="email"></div>
           </div>
@@ -563,6 +576,10 @@ window.CONFIG = {
   var params = new URLSearchParams(location.search);
   var DEBUG = params.get("debug") === "1";
   var VENDOR_PARAM = (params.get("vendor") || "").trim();
+  var VENDOR_WA = (params.get("vwa") || "").trim();
+  var VENDOR_GROUP = (params.get("vg") || "").trim();
+  if (!/^https:\/\/chat\.whatsapp\.com\//i.test(VENDOR_GROUP)) VENDOR_GROUP = "";
+  var VMODE = !!VENDOR_PARAM;
   var $ = function (id) { return document.getElementById(id); };
 
   // ------------------------------------------------------------------ TEXT
@@ -603,6 +620,18 @@ window.CONFIG = {
       ven_title: "For vendors",
       ven_text: "Every team member must register and pass the test on their own phone. Create your team link and share it with your members. Each registration through the link is counted under your vendor name.",
       ven_name: "Vendor / team name", ven_btn: "Create my team link", copy: "Copy", copied: "Copied",
+      ven_wa: "Your WhatsApp number", ven_group: "Your team WhatsApp group link",
+      ven_group_h: "Members are sent to this group after they submit. Format: https://chat.whatsapp.com/...",
+      ven_err: "Please enter your team name, WhatsApp number and a valid WhatsApp group link (https://chat.whatsapp.com/...).",
+      vs1: "Create a WhatsApp group for your team and copy its invite link",
+      vs2: "Fill in your team name, your WhatsApp number and the group link below",
+      vs3: "Tap “Create my team link” and copy the link",
+      vs4: "Share the link with your members. Each member opens it on their own Huawei, Apple or Samsung phone",
+      vs5: "Each member enters name, gender, age and phone model, then records the 5 test sentences. No contact or payment details are needed",
+      vs6: "After submitting, members join your group automatically. We send the test results and the full script to you",
+      vbanner: "Registering under team: {v}",
+      wa_btn_v: "Join your team WhatsApp group",
+      wa_hint_v: "Join your team group to receive the script and updates.",
       apply_title: "Apply and take the test",
       apply_lead: "It takes about 10 minutes. Use your phone in a quiet room.",
       s1: "Step 1 of 4 · Your details", s2: "Step 2 of 4 · Room check", s3: "Step 3 of 4 · Test recording", s4: "Step 4 of 4 · Submit",
@@ -644,6 +673,7 @@ window.CONFIG = {
       e_age: "Age must be between 18 and 55.",
       e_full: "Sorry, the {g} group for age {a} is full.",
       e_dup: "You are already registered with this WhatsApp number or email.",
+      e_dup_v: "This name is already registered under this team.",
       e_net: "Upload failed. Check your internet connection and try again.",
       e_cfg: "The portal is not connected yet. Please contact the project manager.",
       e_dev: "Your phone looks like {m}. Only Huawei, Apple or Samsung are accepted.",
@@ -686,6 +716,18 @@ window.CONFIG = {
       ven_title: "Untuk vendor",
       ven_text: "Setiap anggota tim wajib mendaftar dan lulus tes dengan HP masing-masing. Buat link tim Anda lalu bagikan ke anggota. Setiap pendaftaran lewat link tersebut dihitung atas nama vendor Anda.",
       ven_name: "Nama vendor / tim", ven_btn: "Buat link tim saya", copy: "Salin", copied: "Tersalin",
+      ven_wa: "Nomor WhatsApp Anda", ven_group: "Link grup WhatsApp tim Anda",
+      ven_group_h: "Anggota akan diarahkan ke grup ini setelah mengirim tes. Format: https://chat.whatsapp.com/...",
+      ven_err: "Mohon isi nama tim, nomor WhatsApp dan link grup WhatsApp yang benar (https://chat.whatsapp.com/...).",
+      vs1: "Buat grup WhatsApp untuk tim Anda lalu salin link undangannya",
+      vs2: "Isi nama tim, nomor WhatsApp Anda dan link grup di bawah",
+      vs3: "Tekan “Buat link tim saya” lalu salin link-nya",
+      vs4: "Bagikan link ke anggota. Setiap anggota membukanya di HP Huawei, Apple atau Samsung masing-masing",
+      vs5: "Setiap anggota mengisi nama, jenis kelamin, usia dan tipe HP, lalu merekam 5 kalimat tes. Tidak perlu data kontak atau pembayaran",
+      vs6: "Setelah mengirim, anggota otomatis bergabung ke grup Anda. Kami mengirim hasil tes dan naskah lengkap kepada Anda",
+      vbanner: "Mendaftar di bawah tim: {v}",
+      wa_btn_v: "Gabung grup WhatsApp tim Anda",
+      wa_hint_v: "Gabung ke grup tim untuk menerima naskah dan informasi.",
       apply_title: "Daftar dan ikuti tes",
       apply_lead: "Sekitar 10 menit. Gunakan HP Anda di ruangan yang tenang.",
       s1: "Langkah 1 dari 4 · Data diri", s2: "Langkah 2 dari 4 · Cek ruangan", s3: "Langkah 3 dari 4 · Rekaman tes", s4: "Langkah 4 dari 4 · Kirim",
@@ -727,6 +769,7 @@ window.CONFIG = {
       e_age: "Usia harus antara 18 dan 55 tahun.",
       e_full: "Maaf, kelompok {g} usia {a} sudah penuh.",
       e_dup: "Anda sudah terdaftar dengan nomor WhatsApp atau email ini.",
+      e_dup_v: "Nama ini sudah terdaftar di tim ini.",
       e_net: "Gagal mengunggah. Periksa koneksi internet lalu coba lagi.",
       e_cfg: "Portal belum terhubung. Silakan hubungi manajer proyek.",
       e_dev: "HP Anda terdeteksi sebagai {m}. Hanya Huawei, Apple atau Samsung yang diterima.",
@@ -746,6 +789,7 @@ window.CONFIG = {
     document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
     document.querySelectorAll(".lang button").forEach(function (b) { b.classList.toggle("on", b.dataset.lang === lang); });
     $("deadline").textContent = lang === "id" ? C.DEADLINE_ID : C.DEADLINE_EN;
+    if (VMODE) $("vendorBanner").textContent = t("vbanner", { v: VENDOR_PARAM });
     renderQuota(); renderSentences(); if (currentStep === 4) renderSummary();
   }
   document.querySelectorAll(".lang button").forEach(function (b) {
@@ -797,8 +841,12 @@ window.CONFIG = {
 
   // ------------------------------------------------------------------ VENDOR LINK
   $("vlMake").onclick = function () {
-    var n = $("vlName").value.trim(); if (!n) { $("vlName").focus(); return; }
-    var url = location.origin + location.pathname + "?vendor=" + encodeURIComponent(n) + "#apply";
+    var n = $("vlName").value.trim(), w = $("vlWa").value.trim(), g = $("vlGroup").value.trim();
+    var e = $("vlErr");
+    if (!n || !w || !/^https:\/\/chat\.whatsapp\.com\/\S+$/i.test(g)) { e.textContent = t("ven_err"); e.className = "msg err show"; return; }
+    e.className = "msg err";
+    var url = location.origin + location.pathname + "?vendor=" + encodeURIComponent(n) +
+      "&vwa=" + encodeURIComponent(w) + "&vg=" + encodeURIComponent(g) + "#apply";
     $("vlOut").value = url; $("vlBox").style.display = "flex";
   };
   $("vlCopy").onclick = function () {
@@ -814,15 +862,15 @@ window.CONFIG = {
     $("vendorFields").style.display = v ? "block" : "none";
   }
   document.querySelectorAll("input[name=type]").forEach(function (r) { r.onchange = syncType; });
-  if (VENDOR_PARAM) {
+  if (VMODE) {
     document.querySelector("input[value=Vendor]").checked = true;
-    document.querySelector("input[value=Individual]").disabled = true;
-    $("vendorName").value = VENDOR_PARAM; $("vendorName").readOnly = true;
-    var bn = $("vendorBanner"); bn.style.display = "block";
-    bn.textContent = (lang === "id" ? "Mendaftar di bawah vendor: " : "Registering under vendor: ") + VENDOR_PARAM;
-    $("payRow").style.display = "none"; // vendor pays its own members
+    $("vendorName").value = VENDOR_PARAM;
+    $("vendorBanner").style.display = "block";
+    // Members see no rates, no vendor tools and no contact/payment fields
+    ["factInd", "factVen", "venCard", "typeField", "cityField", "contactRow", "payRow"].forEach(function (id) { $(id).style.display = "none"; });
   }
   syncType();
+  if (VMODE) $("vendorFields").style.display = "none";
 
   function checkQuotaField() {
     var m = $("quotaMsg"), g = ageGroup($("age").value), gen = $("gender").value;
@@ -856,9 +904,8 @@ window.CONFIG = {
   function err(id, k) { var e = $(id); e.textContent = k ? t(k) : ""; e.className = "msg err" + (k ? " show" : ""); }
   $("next1").onclick = function () {
     var vendor = typeVal() === "Vendor";
-    var need = ["fullName", "gender", "age", "city", "wa", "email", "brand", "model"];
-    if (vendor) need.push("vendorName", "vendorWa");
-    if (!VENDOR_PARAM) need.push("payId");
+    var need = VMODE ? ["fullName", "gender", "age", "brand", "model"] : ["fullName", "gender", "age", "city", "wa", "email", "brand", "model", "payId"];
+    if (vendor && !VMODE) need.push("vendorName", "vendorWa");
     var miss = need.some(function (id) { return !val(id); }) || !$("c1").checked || !$("c2").checked;
     if (miss) return err("err1", "e_required");
     if (!ageGroup(val("age"))) return err("err1", "e_age");
@@ -1026,10 +1073,12 @@ window.CONFIG = {
   // ------------------------------------------------------------------ STEP 4 SUBMIT
   function renderSummary() {
     var dl = $("summary"); dl.innerHTML = "";
-    var rows = [["sm_name", val("fullName")], ["sm_type", typeVal()]];
+    var rows = [["sm_name", val("fullName")]];
+    if (!VMODE) rows.push(["sm_type", typeVal()]);
     if (typeVal() === "Vendor") rows.push(["sm_vendor", val("vendorName")]);
-    rows.push(["sm_gender", t($("gender").value === "Male" ? "male" : "female")], ["sm_age", val("age")], ["sm_city", val("city")],
-      ["sm_wa", val("wa")], ["sm_device", val("brand") + " " + val("model")], ["sm_tests", t("sm_tests_v")]);
+    rows.push(["sm_gender", t($("gender").value === "Male" ? "male" : "female")], ["sm_age", val("age")]);
+    if (!VMODE) rows.push(["sm_city", val("city")], ["sm_wa", val("wa")]);
+    rows.push(["sm_device", val("brand") + " " + val("model")], ["sm_tests", t("sm_tests_v")]);
     rows.forEach(function (r) {
       var dt = document.createElement("dt"); dt.textContent = t(r[0]);
       var dd = document.createElement("dd"); dd.textContent = r[1];
@@ -1049,12 +1098,13 @@ window.CONFIG = {
       action: "submit",
       type: typeVal(),
       vendorName: typeVal() === "Vendor" ? val("vendorName") : "",
-      vendorWa: typeVal() === "Vendor" ? val("vendorWa") : "",
-      viaVendorLink: !!VENDOR_PARAM,
+      vendorWa: VMODE ? VENDOR_WA : typeVal() === "Vendor" ? val("vendorWa") : "",
+      vendorGroup: VMODE ? VENDOR_GROUP : "",
+      viaVendorLink: VMODE,
       fullName: val("fullName"), gender: $("gender").value, age: +val("age"), ageGroup: ageGroup(val("age")),
-      country: "Indonesia", city: val("city"), whatsapp: val("wa"), email: val("email"),
+      country: "Indonesia", city: VMODE ? "" : val("city"), whatsapp: VMODE ? "" : val("wa"), email: VMODE ? "" : val("email"),
       brand: val("brand"), model: val("model"),
-      payMethod: VENDOR_PARAM ? "" : $("payMethod").value, payId: VENDOR_PARAM ? "" : val("payId"),
+      payMethod: VMODE ? "" : $("payMethod").value, payId: VMODE ? "" : val("payId"),
       detectedModel: detected.model, userAgent: navigator.userAgent, roomNoise: roomNoise, lang: lang,
       tests: results.map(function (r, i) {
         return { index: i + 1, caseId: C.TEST_SENTENCES[i].caseId, domain: C.TEST_SENTENCES[i].domain, sentence: C.TEST_SENTENCES[i].text, status: r.status, peak: r.peak, noise: r.noise, snr: r.snr,
@@ -1066,14 +1116,18 @@ window.CONFIG = {
       .then(function (j) {
         if (!j.ok) throw new Error(j.error || "server");
         $("doneText").textContent = t("done_text", { id: j.id });
-        if (C.WHATSAPP_GROUP) { var w = $("waBtn"); w.href = C.WHATSAPP_GROUP; w.style.display = "flex"; $("waHint").style.display = "block"; }
+        var grp = VMODE ? VENDOR_GROUP : C.WHATSAPP_GROUP;
+        if (grp) {
+          var w = $("waBtn"); w.href = grp; w.style.display = "flex"; $("waHint").style.display = "block";
+          if (VMODE) { w.textContent = t("wa_btn_v"); $("waHint").textContent = t("wa_hint_v"); }
+        }
         $("doneModal").classList.add("show");
         btn.textContent = t("submit");
       })
       .catch(function (e) {
         btn.disabled = false; btn.textContent = t("submit");
         var m = String(e.message || "");
-        err("err4", m === "duplicate" ? "e_dup" : m === "quota_full" ? null : "e_net");
+        err("err4", m === "duplicate" ? (VMODE ? "e_dup_v" : "e_dup") : m === "quota_full" ? null : "e_net");
         if (m === "quota_full") { var x = $("err4"); x.className = "msg err show"; x.textContent = t("e_full", { g: t($("gender").value === "Male" ? "male" : "female"), a: ageGroup(val("age")) }); loadQuota(); }
       });
   };
