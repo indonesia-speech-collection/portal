@@ -151,7 +151,7 @@
     <span class="tag"><span class="dot"></span><span data-t="hero_tag"></span></span>
     <h1 data-t="hero_title"></h1>
     <p class="sub" data-t="hero_sub"></p>
-    <a href="#apply" class="btn btn-red" data-t="cta"></a>
+    <a href="#apply" class="btn btn-red" id="heroCta" data-t="cta"></a>
 
     <div class="facts">
       <div class="fact hl" id="factInd"><div class="k" data-t="f_ind"></div><div class="v" id="rateInd"></div><div class="n" data-t="f_rate_n"></div></div>
@@ -165,7 +165,7 @@
 
   <section>
     <div class="wrap grid2">
-      <div>
+      <div id="howCol">
         <h2 data-t="how_title"></h2>
         <p class="lead" data-t="how_lead"></p>
         <ol class="steps">
@@ -332,7 +332,7 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
-  VERSION: "v1.9",
+  VERSION: "v2.0",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
@@ -594,7 +594,8 @@ window.CONFIG = {
   var VENDOR_WA = (params.get("vwa") || "").trim();
   var VENDOR_GROUP = (params.get("vg") || "").trim();
   if (!/^https:\/\/chat\.whatsapp\.com\//i.test(VENDOR_GROUP)) VENDOR_GROUP = "";
-  var VMODE = !!VENDOR_PARAM;
+  var VMODE = !!VENDOR_PARAM;                                   // member arriving via a team link
+  var PMODE = !VMODE && (params.get("for") || "").toLowerCase() === "vendor"; // vendor landing page
   var $ = function (id) { return document.getElementById(id); };
 
   // ------------------------------------------------------------------ TEXT
@@ -657,7 +658,10 @@ window.CONFIG = {
       wa_btn_v: "Join your team WhatsApp group",
       wa_hint_v: "Join your team group to receive the script and updates.",
       apply_title: "Apply and take the test",
-      apply_lead: "For individuals. It takes about 10 minutes. Use your phone in a quiet room. Vendors: don't use this form, create your team link above.",
+      apply_lead: "It takes about 10 minutes. Use your phone in a quiet room.",
+      hero_tag_p: "Vendor partnership · Indonesia",
+      hero_sub_p: "Bring your team of Indonesian native speakers. Each member reads 1,300 short sentences on their phone. You earn per member who completes the work.",
+      cta_p: "Create your team link",
       s1: "Step 1 of 4 · Your details", s2: "Step 2 of 4 · Room check", s3: "Step 3 of 4 · Test recording", s4: "Step 4 of 4 · Submit",
       type_l: "I am applying as", type_ind: "Individual", type_ven: "Vendor team member",
       v_name: "Vendor / team name", v_wa: "Vendor WhatsApp",
@@ -762,7 +766,10 @@ window.CONFIG = {
       wa_btn_v: "Gabung grup WhatsApp tim Anda",
       wa_hint_v: "Gabung ke grup tim untuk menerima naskah dan informasi.",
       apply_title: "Daftar dan ikuti tes",
-      apply_lead: "Untuk individu. Sekitar 10 menit. Gunakan HP Anda di ruangan yang tenang. Vendor: jangan pakai formulir ini, buat link tim di atas.",
+      apply_lead: "Sekitar 10 menit. Gunakan HP Anda di ruangan yang tenang.",
+      hero_tag_p: "Kemitraan vendor · Indonesia",
+      hero_sub_p: "Ajak tim penutur asli bahasa Indonesia Anda. Setiap anggota membaca 1.300 kalimat pendek lewat HP. Anda dibayar per anggota yang menyelesaikan pekerjaan.",
+      cta_p: "Buat link tim Anda",
       s1: "Langkah 1 dari 4 · Data diri", s2: "Langkah 2 dari 4 · Cek ruangan", s3: "Langkah 3 dari 4 · Rekaman tes", s4: "Langkah 4 dari 4 · Kirim",
       type_l: "Saya mendaftar sebagai", type_ind: "Individu", type_ven: "Anggota tim vendor",
       v_name: "Nama vendor / tim", v_wa: "WhatsApp vendor",
@@ -822,6 +829,11 @@ window.CONFIG = {
     document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
     document.querySelectorAll(".lang button").forEach(function (b) { b.classList.toggle("on", b.dataset.lang === lang); });
     $("deadline").textContent = lang === "id" ? C.DEADLINE_ID : C.DEADLINE_EN;
+    if (PMODE) {
+      document.querySelector('[data-t="hero_tag"]').textContent = t("hero_tag_p");
+      document.querySelector('[data-t="hero_sub"]').textContent = t("hero_sub_p");
+      $("heroCta").textContent = t("cta_p");
+    }
     if (VMODE) {
       $("vendorBanner").textContent = t("vbanner", { v: VENDOR_PARAM });
       $("applyTitle").textContent = t("apply_title_v"); $("applyLead").textContent = t("apply_lead_v");
@@ -891,6 +903,13 @@ window.CONFIG = {
 
   // ------------------------------------------------------------------ FORM STEP 1
   function typeVal() { return VMODE ? "Vendor" : "Individual"; }
+  // Individual page (default): no vendor content
+  if (!VMODE && !PMODE) ["factVen", "venCard"].forEach(function (id) { $(id).style.display = "none"; });
+  // Vendor page (?for=vendor): only vendor content, no application form
+  if (PMODE) {
+    ["factInd", "howCol", "apply"].forEach(function (id) { $(id).style.display = "none"; });
+    $("heroCta").setAttribute("href", "#venCard");
+  }
   if (VMODE) {
     $("vendorBanner").style.display = "block";
     // Members see no rates, no vendor tools and no contact/payment fields
