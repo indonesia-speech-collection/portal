@@ -332,7 +332,7 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
-  VERSION: "v2.0",
+  VERSION: "v2.1",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
@@ -362,6 +362,9 @@ window.CONFIG = {
     { caseId: "20260810_00649", domain: "AIGC", text: "Bantu saya siapkan pesan permintaan maaf karena mengirim dokumen yang belum lengkap. Buat agar cocok dan siap dikirim lewat WhatsApp." },
     { caseId: "20260803_06330", domain: "通用问答", text: "Tetangga saya dari kalangan mampu, tapi kok masih dapat bantuan sosial terus? Gimana cara melaporkannya, ya?" }
   ],
+
+  // false = slots never show "Full" (collect as many applicants as possible)
+  QUOTA_LIMIT_ON: false,
 
   // Quota shown on the page (the real limits live in the Apps Script)
   QUOTA: {
@@ -857,6 +860,7 @@ window.CONFIG = {
   var quota = { counts: null, caps: null };
   function ageGroup(a) { a = +a; return a >= 18 && a <= 28 ? "18-28" : a >= 29 && a <= 45 ? "29-45" : a >= 46 && a <= 55 ? "46-55" : ""; }
   function isFull(g, gen) {
+    if (!C.QUOTA_LIMIT_ON) return false; // slots never close
     if (!quota.counts || !quota.caps) return false;
     var k = gen === "Male" ? "M" : "F";
     return (quota.counts[g] && quota.counts[g][k] || 0) >= (quota.caps[g] && quota.caps[g][k] || Infinity);
@@ -922,7 +926,7 @@ window.CONFIG = {
     m.className = "msg";
     if (!g || !gen) return true;
     if (isFull(g, gen)) { m.className = "msg err show"; m.textContent = t("e_full", { g: t(gen === "Male" ? "male" : "female"), a: g }); return false; }
-    if (quota.counts) { m.className = "msg ok show"; m.textContent = t("q_ok"); }
+
     return true;
   }
   $("age").oninput = checkQuotaField; $("gender").onchange = checkQuotaField;
