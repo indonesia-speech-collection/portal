@@ -338,6 +338,7 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
+  VERSION: "v1.3 (strict noise)",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
@@ -382,9 +383,9 @@ window.CONFIG = {
     TRIM_PADDING: 0.4,      // seconds of silence kept after auto-trim
     PEAK_MIN: 3000,
     PEAK_MAX: 20000,
-    ROOM_NOISE_MAX: 50,     // room check must be below this (stricter than client)
-    NOISE_GOOD: 100,        // recording noise: below = pass
-    NOISE_MAX: 200,         // recording noise: 100-200 = borderline, 200+ = fail (client limit is 300)
+    ROOM_NOISE_MAX: 30,     // room check: average noise must be below this
+    NOISE_GOOD: 50,         // recording noise: below = pass
+    NOISE_MAX: 100,         // recording noise: 50-100 = borderline, 100+ = fail (client limit is 300)
     SNR_GOOD: 20,
     SNR_MIN: 15,
     MAX_SECONDS: 25
@@ -802,7 +803,7 @@ window.CONFIG = {
   // ------------------------------------------------------------------ STATIC
   document.title = C.PROJECT + " · " + C.BRAND;
   $("brandName").textContent = C.BRAND;
-  $("brandFoot").textContent = "© " + new Date().getFullYear() + " " + C.BRAND;
+  $("brandFoot").textContent = "© " + new Date().getFullYear() + " " + C.BRAND + (C.VERSION ? " · " + C.VERSION : "");
   $("rateInd").textContent = "$" + C.RATE_INDIVIDUAL;
   $("rateVen").textContent = "$" + C.RATE_VENDOR;
   $("segInd").textContent = "$" + C.RATE_INDIVIDUAL + " / 1,300";
@@ -979,10 +980,12 @@ window.CONFIG = {
           var acc = 0; for (var i = f * frame; i < (f + 1) * frame; i++) { var v = s[i] * 32767; acc += v * v; }
           frames.push(Math.sqrt(acc / frame));
         }
-        frames.sort(function (a, b) { return a - b; });
-        var mid = frames.slice(0, Math.max(1, Math.floor(frames.length * 0.8)));
-        roomNoise = Math.round(mid.reduce(function (a, b) { return a + b; }, 0) / mid.length);
-        var ok = roomNoise < (A.ROOM_NOISE_MAX || A.NOISE_MAX);
+        // Average of ALL frames (every sound counts) + loudest frame must also stay low
+        roomNoise = Math.round(frames.reduce(function (a, b) { return a + b; }, 0) / frames.length);
+        var roomPeak = Math.max.apply(null, frames);
+        var lim = A.ROOM_NOISE_MAX || A.NOISE_MAX;
+        var ok = roomNoise < lim && roomPeak < lim * 3;
+        if (roomPeak >= lim * 3) roomNoise = Math.max(roomNoise, Math.round(roomPeak / 3));
         msg.className = "msg show " + (ok ? "ok" : "err");
         msg.textContent = t(ok ? "room_ok" : "room_bad", { n: roomNoise });
         $("next2").disabled = !ok;
