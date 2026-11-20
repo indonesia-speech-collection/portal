@@ -138,7 +138,7 @@
 
 <header>
   <div class="wrap bar">
-    <div class="brand"><span class="flag"><i></i><i></i></span><span id="brandName">Translitmedia</span></div>
+    <div class="brand"><span class="flag"><i></i><i></i></span><span id="brandName">Indonesian Reading Recording</span></div>
     <div class="lang" role="group" aria-label="Language">
       <button data-lang="id">ID</button>
       <button data-lang="en" class="on">EN</button>
@@ -312,7 +312,6 @@
 
 <footer>
   <div class="wrap contact">
-    <div><b data-t="contact"></b><br><span id="contactLine"></span></div>
     <div id="brandFoot"></div>
   </div>
 </footer>
@@ -332,18 +331,14 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
-  VERSION: "v2.1",
+  VERSION: "v2.2",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
   // 2) WhatsApp group invite link (shown after a successful submission)
   WHATSAPP_GROUP: "https://chat.whatsapp.com/KMcpPJa3fhfKs8jKEXk7RQ",
 
-  BRAND: "Translitmedia",
   PROJECT: "Indonesian Reading Recording",
-  CONTACT_NAME: "SIYAM",
-  CONTACT_ROLE: "Operational Manager",
-  CONTACT_PHONE: "+8801600866444",
 
   DEADLINE_EN: "5 December 2026",
   DEADLINE_ID: "5 Desember 2026",
@@ -848,12 +843,11 @@ window.CONFIG = {
   });
 
   // ------------------------------------------------------------------ STATIC
-  document.title = C.PROJECT + " · " + C.BRAND;
-  $("brandName").textContent = C.BRAND;
-  $("brandFoot").textContent = "© " + new Date().getFullYear() + " " + C.BRAND + (C.VERSION ? " · " + C.VERSION : "");
+  document.title = C.PROJECT;
+  $("brandName").textContent = C.PROJECT;
+  $("brandFoot").textContent = C.VERSION || "";
   $("rateInd").textContent = "$" + C.RATE_INDIVIDUAL;
   $("rateVen").textContent = "$" + C.RATE_VENDOR;
-  $("contactLine").textContent = C.CONTACT_NAME + ", " + C.CONTACT_ROLE + " · " + C.CONTACT_PHONE;
   C.PAYMENT_METHODS.forEach(function (m) { var o = document.createElement("option"); o.textContent = m; $("payMethod").appendChild(o); });
 
   // ------------------------------------------------------------------ QUOTA
