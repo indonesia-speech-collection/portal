@@ -223,6 +223,12 @@
         </div>
         <div class="msg err" id="vlErr"></div>
         <button class="btn btn-dark btn-sm" id="vlMake" data-t="ven_btn"></button>
+        <div id="vlJoin" style="display:none;margin-top:14px" class="warnbox">
+          <b data-t="vj_title"></b>
+          <p style="margin:6px 0 12px" data-t="vj_text"></p>
+          <a class="btn wa" id="vlJoinBtn" target="_blank" rel="noopener" style="width:100%" data-t="vj_btn"></a>
+        </div>
+        <p class="hint" id="vlReady" style="display:none;margin:14px 0 0" data-t="vj_ready"></p>
         <div class="vlink" id="vlBox" style="display:none">
           <input id="vlOut" readonly>
           <button class="btn btn-ghost btn-sm" id="vlCopy" data-t="copy"></button>
@@ -331,12 +337,15 @@
 //  PORTAL SETTINGS — edit only this file
 // =====================================================================
 window.CONFIG = {
-  VERSION: "v2.2",
+  VERSION: "v2.3",
   // 1) Paste your Apps Script Web App URL here (ends with /exec)
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwI9WYkyvDLQVvGa_L3qNxOqWGzPQSXLWXgiiIiNJt-nBdr6wOH2_k1QujzdK3HKL29AQ/exec",
 
   // 2) WhatsApp group invite link (shown after a successful submission)
   WHATSAPP_GROUP: "https://chat.whatsapp.com/KMcpPJa3fhfKs8jKEXk7RQ",
+
+  // Group vendors must join before they get their team link (empty = same as WHATSAPP_GROUP)
+  VENDOR_WHATSAPP_GROUP: "",
 
   PROJECT: "Indonesian Reading Recording",
 
@@ -640,10 +649,14 @@ window.CONFIG = {
       ven_err: "Please enter your team name, WhatsApp number and a valid WhatsApp group link (https://chat.whatsapp.com/...).",
       vs1: "Create a WhatsApp group for your team members. Open the group → Group info → Invite via link → Copy link",
       vs2: "Enter your team name, your own WhatsApp number and that group link in the boxes below",
-      vs3: "Tap “Create my team link”. A new link appears. Tap “Copy”",
+      vs3: "Tap “Create my team link”, then join our vendor WhatsApp group (required). After joining, your team link appears. Tap “Copy”",
       vs4: "Send this team link to your members (not the normal page link)",
       vs5: "Each member opens your team link on their own Huawei, Apple or Samsung phone, fills in name, gender, age and phone model and records the 5 test sentences",
-      vs6: "After submitting, members are sent to your WhatsApp group. We contact you, not your members, with test results, the full script and payment",
+      vs6: "After submitting, members are sent to your WhatsApp group. We contact you, not your members, in our vendor group with test results, the full script and payment",
+      vj_title: "One more step: join our vendor group",
+      vj_text: "This is how we stay in touch with you about your team, test results, scripts and payment. Your team link appears after you tap the button.",
+      vj_btn: "Join vendor WhatsApp group (required)",
+      vj_ready: "Your team link is ready. Copy it and send it to your members.",
       vn_title: "Please note",
       vn1: "Create the link once and reuse it for your whole team. You can create it again any time with the same details.",
       vn2: "If members use the normal page link instead of your team link, they are counted as individuals, not under your team.",
@@ -748,10 +761,14 @@ window.CONFIG = {
       ven_err: "Mohon isi nama tim, nomor WhatsApp dan link grup WhatsApp yang benar (https://chat.whatsapp.com/...).",
       vs1: "Buat grup WhatsApp untuk anggota tim. Buka grup → Info grup → Undang via link → Salin link",
       vs2: "Isi nama tim, nomor WhatsApp Anda sendiri dan link grup tersebut di kolom bawah",
-      vs3: "Tekan “Buat link tim saya”. Link baru akan muncul. Tekan “Salin”",
+      vs3: "Tekan “Buat link tim saya”, lalu gabung ke grup WhatsApp vendor kami (wajib). Setelah bergabung, link tim Anda muncul. Tekan “Salin”",
       vs4: "Kirim link tim ini ke anggota Anda (bukan link halaman biasa)",
       vs5: "Setiap anggota membuka link tim di HP Huawei, Apple atau Samsung masing-masing, mengisi nama, jenis kelamin, usia dan tipe HP lalu merekam 5 kalimat tes",
-      vs6: "Setelah mengirim, anggota diarahkan ke grup WhatsApp Anda. Kami menghubungi Anda, bukan anggota, untuk hasil tes, naskah lengkap dan pembayaran",
+      vs6: "Setelah mengirim, anggota diarahkan ke grup WhatsApp Anda. Kami menghubungi Anda, bukan anggota, di grup vendor kami untuk hasil tes, naskah lengkap dan pembayaran",
+      vj_title: "Satu langkah lagi: gabung ke grup vendor kami",
+      vj_text: "Melalui grup ini kami menghubungi Anda tentang tim, hasil tes, naskah dan pembayaran. Link tim Anda muncul setelah Anda menekan tombol.",
+      vj_btn: "Gabung grup WhatsApp vendor (wajib)",
+      vj_ready: "Link tim Anda sudah siap. Salin lalu kirim ke anggota Anda.",
       vn_title: "Harap diperhatikan",
       vn1: "Buat link sekali saja lalu gunakan untuk seluruh tim. Anda bisa membuatnya lagi kapan saja dengan data yang sama.",
       vn2: "Jika anggota memakai link halaman biasa, mereka dihitung sebagai individu, bukan anggota tim Anda.",
@@ -891,8 +908,24 @@ window.CONFIG = {
     e.className = "msg err";
     var url = location.origin + location.pathname + "?vendor=" + encodeURIComponent(n) +
       "&vwa=" + encodeURIComponent(w) + "&vg=" + encodeURIComponent(g) + "#apply";
-    $("vlOut").value = url; $("vlBox").style.display = "flex";
+    $("vlOut").value = url;
+    // Save the vendor in the Sheet so we can contact them
+    if (C.SCRIPT_URL) {
+      fetch(C.SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "vendor", vendorName: n, vendorWa: w, vendorGroup: g, teamLink: url, lang: lang }) }).catch(function () {});
+    }
+    // Vendors must join our group before the team link is shown
+    var grp = C.VENDOR_WHATSAPP_GROUP || C.WHATSAPP_GROUP;
+    if (grp) {
+      $("vlJoinBtn").href = grp; $("vlJoin").style.display = "block";
+      $("vlBox").style.display = "none"; $("vlReady").style.display = "none";
+    } else showTeamLink();
   };
+  function showTeamLink() {
+    $("vlJoin").style.display = "none";
+    $("vlBox").style.display = "flex"; $("vlReady").style.display = "block";
+  }
+  $("vlJoinBtn").addEventListener("click", function () { setTimeout(showTeamLink, 300); });
   $("vlCopy").onclick = function () {
     var v = $("vlOut"); v.select();
     (navigator.clipboard ? navigator.clipboard.writeText(v.value) : Promise.reject()).catch(function () { document.execCommand("copy"); });
