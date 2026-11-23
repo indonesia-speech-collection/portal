@@ -122,7 +122,7 @@
         <button class="ghost" id="nextBtn">Next →</button>
       </div>
       <div id="qc" class="qc hidden"></div>
-      <p class="mut" style="margin:12px 0 0">Keyboard: <span class="kbd">Space</span> record / stop · <span class="kbd">←</span> <span class="kbd">→</span> move · <span class="kbd">P</span> play</p>
+      <p class="mut" id="kbdHint" style="margin:12px 0 0">Keyboard: <span class="kbd">Space</span> record / stop · <span class="kbd">←</span> <span class="kbd">→</span> move · <span class="kbd">P</span> play</p>
     </div>
 
     <div class="card">
@@ -170,6 +170,7 @@ function showBlocker() {
   b.innerHTML = '<div><h2>Please use your phone</h2><p class="mut">This recording link only works on your registered mobile phone.<br>Open the same link on your phone.</p></div>';
   document.body.appendChild(b);
 }
+if (IS_PHONE) document.addEventListener("DOMContentLoaded", () => { const k = document.getElementById("kbdHint"); if (k) k.style.display = "none"; });
 if (!IS_PHONE) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showBlocker); else showBlocker(); }
 let uploaded = new Set(), upQueue = [], upBusy = false, creds = null;
 let live = null, recState = "idle", autoT = null;
@@ -299,12 +300,14 @@ function analyse(pcm) {
   const thr = Math.max(floor * 4, mx * 0.06, 150);
   let a = -1, b = -1; for (let f = 0; f < n; f++) if (rms[f] > thr) { if (a < 0) a = f; b = f; }
   if (a < 0 || (b - a + 1) * F / SR < QC.MIN_SPEECH) return { err: ["No clear voice detected. Please read the sentence."] };
-  const s0 = a * F, s1 = (b + 1) * F, margin = Math.round(0.15 * SR);
-  let np = 0;
-  for (let i = 0; i < s0 - margin; i++) np = Math.max(np, Math.abs(pcm[i]));
-  for (let i = s1 + margin; i < pcm.length; i++) np = Math.max(np, Math.abs(pcm[i]));
+  const s0 = a * F, s1 = (b + 1) * F, margin = Math.round(0.2 * SR);
   const keep = Math.round(QC.KEEP_SIL * SR);
   const t0 = Math.max(0, s0 - keep), t1 = Math.min(pcm.length, s1 + keep);
+  // Noise is measured only on the silence that stays in the final file (like the client's QC).
+  // The screen tap on "Record" at the very start is cut off and never counted.
+  let np = 0;
+  for (let i = t0; i < s0 - margin; i++) np = Math.max(np, Math.abs(pcm[i]));
+  for (let i = s1 + margin; i < t1; i++) np = Math.max(np, Math.abs(pcm[i]));
   const out = pcm.slice(t0, t1);
   let pk = 0, clip = 0, ss = 0;
   for (const v of out) { const x = Math.abs(v); if (x > pk) pk = x; if (x >= 32000) clip++; }
@@ -454,7 +457,8 @@ async function finish(auto) {
   if (recState !== "speak") return;
   setRecBtn("post");
   await new Promise(r => setTimeout(r, auto ? 0 : QC.POST_ROLL));
-  live = null; recording = false; const raw = stopCapture(); setRecBtn("idle");
+  live = null; recording = false; let raw = stopCapture(); setRecBtn("idle");
+  raw = raw.subarray(Math.min(raw.length, Math.round(ctx.sampleRate * 0.3)));   // skip the screen-tap click
   const pcm = await toPcm16(raw);
   const a = analyse(pcm);
   const pass = !a.err.length;
