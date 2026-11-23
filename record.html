@@ -40,6 +40,11 @@
   .text{font-size:26px;line-height:1.5;margin:14px 0 8px;font-weight:600}
   .recbtn{width:100%;padding:20px;font-size:18px;margin-top:10px}
   .recbtn.on{background:var(--bad);animation:pulse 1s infinite}
+  .recbtn.hold{background:var(--warn);color:#111;animation:none}
+  .recbtn.speak{background:var(--ok);color:#052e16;animation:pulse 1s infinite}
+  .howto{background:#0b1324;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:13px;line-height:1.7}
+  .howto b{color:#fff}
+  #blocker{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;z-index:99}
   @keyframes pulse{50%{opacity:.75}}
   .meter{height:10px;background:#0b1426;border-radius:6px;overflow:hidden;margin-top:10px}
   .meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .05s}
@@ -81,6 +86,8 @@
       <li>Speak in <b>standard Indonesian</b>, clearly, at a normal speed and normal volume.</li>
       <li>Read <b>exactly</b> what is written. No extra words, no repeats.</li>
       <li>Do not record if you have a cold or a hoarse voice.</li>
+      <li><b>Silence before and after every sentence:</b> press Record and stay quiet until the button turns green and says <b>SPEAK NOW</b>. After the last word, stay quiet again — the recording stops by itself.</li>
+      <li>Use only <b>your registered phone</b>. Your ID works on one phone only.</li>
     </ul>
     <button class="btn full" id="micBtn">Allow microphone &amp; check my room</button>
     <div id="roomRes" class="qc hidden"></div>
@@ -91,7 +98,7 @@
   <div id="vStudio" class="hidden">
     <div class="card">
       <div class="row" style="justify-content:space-between">
-        <b>Batches (100 sentences each)</b>
+        <b>First 100 sentences → after approval, 101–1300 open</b>
         <span class="mut" id="totalTxt"></span>
       </div>
       <div class="prog"><i id="totalBar" style="width:0"></i></div>
@@ -107,6 +114,7 @@
       </div>
       <div class="text" id="stext"></div>
       <button class="btn recbtn" id="recBtn">● Record</button>
+      <div class="howto">1. Press <b>● Record</b> → stay silent (orange)<br>2. When it turns <b>green · SPEAK NOW</b>, read the sentence<br>3. After the last word stay silent — it <b>stops by itself</b> (or press Stop)</div>
       <div class="meter"><i id="meter"></i></div>
       <div class="row" style="margin-top:12px;justify-content:space-between">
         <button class="ghost" id="prevBtn">← Prev</button>
@@ -135,7 +143,12 @@ const QC = {
   SPEECH_RMS_MIN: 650,                 // below this = "speech energy too low"
   NOISE_PEAK_MAX: 250,                 // background noise peak (client limit 300)
   ROOM_NOISE_MAX: 200,                 // room check
-  KEEP_SIL: 0.4,                       // seconds of silence kept before/after speech (client max 1.5)
+  KEEP_SIL: 0.5,                       // seconds of silence kept before/after speech (client max 1.5)
+  MIN_SIL: 0.3,                        // at least this much silence must exist before and after speech
+  PRE_ROLL: 1000,                      // ms of silence recorded before "Speak now"
+  POST_ROLL: 700,                      // ms recorded after pressing Stop
+  AUTO_STOP: 1300,                     // ms of silence after speech that stops the recording automatically
+  VOICE_RMS: 0.02,                     // live voice detection threshold (float RMS)
   MIN_SPEECH: 0.6                      // seconds
 };
 /* ================================================== */
@@ -144,7 +157,21 @@ const P = {"2":{"g":"Male","a":48},"18":{"g":"Female","a":33},"23":{"g":"Female"
 const BATCH = 100, NB = Math.ceil(S.length / BATCH), SR = 16000;
 
 const $ = id => document.getElementById(id);
+const IS_PHONE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && (navigator.maxTouchPoints > 0 || "ontouchstart" in window);
+let DEV = ""; try { DEV = localStorage.getItem("rs_dev") || ""; if (!DEV) { DEV = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)); localStorage.setItem("rs_dev", DEV); } } catch (e) { DEV = ""; }
+async function devName() {
+  try { if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) { const h = await navigator.userAgentData.getHighEntropyValues(["model", "platformVersion"]); if (h.model) return h.model + (h.platform ? " · " + h.platform : ""); } } catch (e) {}
+  const m = navigator.userAgent.match(/;\s*([^;)]+)\s+Build\//) || navigator.userAgent.match(/\((iPhone|iPad)/);
+  return m ? m[1].trim() : (/iPhone/.test(navigator.userAgent) ? "iPhone" : "Android phone");
+}
+function showBlocker() {
+  const b = document.createElement("div"); b.id = "blocker";
+  b.innerHTML = '<div><h2>Please use your phone</h2><p class="mut">This recording link only works on your registered mobile phone.<br>Open the same link on your phone.</p></div>';
+  document.body.appendChild(b);
+}
+if (!IS_PHONE) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showBlocker); else showBlocker(); }
 let uploaded = new Set(), upQueue = [], upBusy = false, creds = null;
+let live = null, recState = "idle", autoT = null;
 let roll = null, name = "", idx = 0, batch = 0, status = {}, db, stream, ctx, recording = false, chunks = [], proc, src, lastBlob = null;
 
 function toast(m) { const t = $("toast"); t.textContent = m; t.className = "show"; clearTimeout(t._h); t._h = setTimeout(() => t.className = "", 2500); }
@@ -182,7 +209,10 @@ $("goBtn").onclick = async () => {
   if (!id || !pw) return toast("Enter your Speaker ID and password");
   const btn = $("goBtn"); btn.disabled = true; btn.textContent = "Checking…";
   try {
-    const j = await (await fetch(SCRIPT_URL + "?action=login&id=" + encodeURIComponent(id) + "&pw=" + encodeURIComponent(pw))).json();
+    if (!IS_PHONE) throw new Error("Please open this link on your phone");
+    if (!DEV) throw new Error("Your browser blocks storage. Please use Chrome.");
+    const q = new URLSearchParams({ action: "login", id, pw, dev: DEV, devName: await devName(), ua: navigator.userAgent });
+    const j = await (await fetch(SCRIPT_URL + "?" + q.toString())).json();
     if (!j.ok) throw new Error(j.msg || "Wrong ID or password");
     roll = j.roll; name = j.name; creds = { id, pw };
     UNLOCKED_BATCHES = j.unlocked || 1;
@@ -234,6 +264,7 @@ function startCapture() {
     let m = 0; for (let i = 0; i < d.length; i += 8) m = Math.max(m, Math.abs(d[i]));
     $("meter").style.width = Math.min(100, m * 160) + "%";
     $("meter").style.background = m > 0.62 ? "var(--bad)" : m < 0.09 ? "var(--warn)" : "var(--ok)";
+    if (live) { let q = 0; for (let i = 0; i < d.length; i++) q += d[i] * d[i]; live(Math.sqrt(q / d.length)); }
   };
   src.connect(proc); proc.connect(ctx.destination);
 }
@@ -280,6 +311,8 @@ function analyse(pcm) {
   const srms = Math.round(Math.sqrt(ss / (s1 - s0)));
   const lead = (s0 - t0) / SR, trail = (t1 - s1) / SR;
   const err = [];
+  if (lead < QC.MIN_SIL) err.push("You started speaking too early. Wait until the button turns green (SPEAK NOW).");
+  if (trail < QC.MIN_SIL) err.push("You stopped too fast. Stay silent after the last word until it stops by itself.");
   if (clip > 5 || pk > QC.PEAK_MAX) err.push("Too loud. Hold the phone a little further away (about 20 cm) or speak a bit softer.");
   else if (pk < QC.PEAK_MIN || srms < QC.SPEECH_RMS_MIN) err.push("Voice too quiet. Speak a little louder or bring the phone closer (about 20 cm).");
   if (np > QC.NOISE_PEAK_MAX) err.push("Background noise detected. Wait for silence, stay still, and do not touch the phone.");
@@ -305,7 +338,7 @@ function renderBatches() {
     const from = b * BATCH, to = Math.min(S.length, from + BATCH);
     let done = 0; for (let i = from; i < to; i++) if (status[i] === "pass") done++;
     const btn = document.createElement("button");
-    btn.textContent = (b + 1) + (b >= UNLOCKED_BATCHES ? " 🔒" : " · " + done + "/" + (to - from));
+    btn.textContent = (from + 1) + "–" + to + (b >= UNLOCKED_BATCHES ? " 🔒" : " · " + done + "/" + (to - from));
     btn.className = (b === batch ? "on " : "") + (done === to - from ? "done" : "");
     btn.disabled = b >= UNLOCKED_BATCHES;
     btn.onclick = () => goTo(from);
@@ -329,7 +362,7 @@ async function runUploads() {
     if (!c || !c.pass) { upQueue.shift(); continue; }
     try {
       const r = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "upload", id: creds.id, pw: creds.pw, i, wav: b64(c.wav), m: c.m || {} }) });
+        body: JSON.stringify({ action: "upload", id: creds.id, pw: creds.pw, dev: DEV, i, wav: b64(c.wav), m: c.m || {} }) });
       const j = await r.json();
       if (!j.ok) throw new Error(j.msg || "Upload failed");
       uploaded.add(i); upQueue.shift();
@@ -365,7 +398,7 @@ function renderGrid() {
 async function goTo(i) {
   if (recording) return;
   if (i < 0 || i >= S.length) return;
-  if (locked(i)) return toast("This batch opens after your first batch is approved");
+  if (locked(i)) return toast("Sentences 101–1300 open after your first 100 are approved");
   idx = i; batch = Math.floor(i / BATCH);
   $("fname").textContent = fileName(i) + ".wav";
   $("pos").textContent = "Sentence " + (i + 1) + " of " + S.length;
@@ -384,15 +417,36 @@ function showQc(r) {
     (r.m ? `<div class="mut" style="margin-top:6px">peak ${r.m.peak} · speech ${r.m.speechRms} · noise ${r.m.noisePeak} · silence ${r.m.lead}s / ${r.m.trail}s</div>` : "");
 }
 
+function setRecBtn(st) {
+  const b = $("recBtn"); recState = st; b.classList.remove("on", "hold", "speak");
+  if (st === "idle") b.textContent = "● Record";
+  else if (st === "pre") { b.textContent = "Stay silent…"; b.classList.add("hold"); }
+  else if (st === "speak") { b.textContent = "SPEAK NOW  ·  ■ Stop"; b.classList.add("speak"); }
+  else if (st === "post") { b.textContent = "Stay silent…"; b.classList.add("hold"); }
+}
 $("recBtn").onclick = async () => {
-  if (!recording) {
+  if (recState === "pre" || recState === "post") return;
+  if (recState === "idle") {
     if (ctx.state === "suspended") await ctx.resume();
-    recording = true; startCapture();
-    $("recBtn").textContent = "■ Stop"; $("recBtn").classList.add("on");
+    recording = true; setRecBtn("pre");
+    let spoke = false, lastVoice = 0, t0 = Date.now();
+    live = rms => {
+      const now = Date.now();
+      if (recState === "pre") return;
+      if (rms > QC.VOICE_RMS) { spoke = true; lastVoice = now; }
+      else if (spoke && recState === "speak" && now - lastVoice > QC.AUTO_STOP) finish(true);
+    };
+    startCapture();
+    setTimeout(() => { if (recState === "pre") setRecBtn("speak"); }, QC.PRE_ROLL);
     return;
   }
-  recording = false; const raw = stopCapture();
-  $("recBtn").textContent = "● Record"; $("recBtn").classList.remove("on");
+  if (recState === "speak") finish(false);
+};
+async function finish(auto) {
+  if (recState !== "speak") return;
+  setRecBtn("post");
+  await new Promise(r => setTimeout(r, auto ? 0 : QC.POST_ROLL));
+  live = null; recording = false; const raw = stopCapture(); setRecBtn("idle");
   const pcm = await toPcm16(raw);
   const a = analyse(pcm);
   const pass = !a.err.length;
@@ -408,7 +462,7 @@ $("recBtn").onclick = async () => {
     let n = idx + 1; while (n < S.length && status[n] === "pass") n++;
     if (n < S.length && !locked(n) && Math.floor(n / BATCH) === batch) setTimeout(() => goTo(n), 700);
   }
-};
+}
 $("playBtn").onclick = () => { if (lastBlob) new Audio(URL.createObjectURL(lastBlob)).play(); };
 $("prevBtn").onclick = () => goTo(idx - 1);
 $("nextBtn").onclick = () => goTo(idx + 1);
