@@ -149,6 +149,7 @@ const QC = {
   POST_ROLL: 700,                      // ms recorded after pressing Stop
   AUTO_STOP: 1300,                     // ms of silence after speech that stops the recording automatically
   VOICE_RMS: 0.02,                     // live voice detection threshold (float RMS)
+  TARGET_PEAK: 12000, MAX_GAIN: 4,     // auto level for quiet phone mics
   MIN_SPEECH: 0.6                      // seconds
 };
 /* ================================================== */
@@ -308,13 +309,20 @@ function analyse(pcm) {
   let pk = 0, clip = 0, ss = 0;
   for (const v of out) { const x = Math.abs(v); if (x > pk) pk = x; if (x >= 32000) clip++; }
   for (let i = s0; i < s1; i++) ss += pcm[i] * pcm[i];
-  const srms = Math.round(Math.sqrt(ss / (s1 - s0)));
+  let srms = Math.round(Math.sqrt(ss / (s1 - s0)));
+  // Auto level: phone mics often record quietly. Raise the whole clip (voice + background) evenly
+  // so the voice peak reaches ~TARGET_PEAK, at most MAX_GAIN times. Noise is checked after the gain.
+  if (pk > 0 && pk < QC.TARGET_PEAK && !clip) {
+    const g = Math.min(QC.MAX_GAIN, QC.TARGET_PEAK / pk);
+    for (let i = 0; i < out.length; i++) out[i] = Math.max(-32768, Math.min(32767, Math.round(out[i] * g)));
+    pk = Math.round(pk * g); srms = Math.round(srms * g); np = Math.round(np * g);
+  }
   const lead = (s0 - t0) / SR, trail = (t1 - s1) / SR;
   const err = [];
   if (lead < QC.MIN_SIL) err.push("You started speaking too early. Wait until the button turns green (SPEAK NOW).");
   if (trail < QC.MIN_SIL) err.push("You stopped too fast. Stay silent after the last word until it stops by itself.");
   if (clip > 5 || pk > QC.PEAK_MAX) err.push("Too loud. Hold the phone a little further away (about 20 cm) or speak a bit softer.");
-  else if (pk < QC.PEAK_MIN || srms < QC.SPEECH_RMS_MIN) err.push("Voice too quiet. Speak a little louder or bring the phone closer (about 20 cm).");
+  else if (pk < QC.PEAK_MIN || srms < QC.SPEECH_RMS_MIN) err.push("Voice too quiet. Hold the phone closer (10–15 cm), with the bottom of the phone (the microphone) towards your mouth, and speak a little louder. The phone volume button does not change this.");
   if (np > QC.NOISE_PEAK_MAX) err.push("Background noise detected. Wait for silence, stay still, and do not touch the phone.");
   return { err, out, m: { peak: pk, speechRms: srms, noisePeak: np, lead: +lead.toFixed(2), trail: +trail.toFixed(2), dur: +(out.length / SR).toFixed(2) } };
 }
