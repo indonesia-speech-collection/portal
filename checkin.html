@@ -48,9 +48,6 @@
         <button type="button" data-s="Not available">No, I can't</button>
       </div>
 
-      <label>WhatsApp number (optional)</label>
-      <input id="contact" placeholder="+62…" inputmode="tel">
-
       <label>Note (optional)</label>
       <input id="note" placeholder="e.g. can record evenings only">
     </div>
@@ -99,7 +96,7 @@ $("submit").onclick = async () => {
   try {
     const r = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ code, roll: $("who").value, status,
-        contact: $("contact").value.trim(), note: $("note").value.trim() }) });
+        note: $("note").value.trim() }) });
     const j = await r.json(); if (!j.ok) throw new Error(j.msg);
     const name = $("who").selectedOptions[0].text;
     $("app").innerHTML = `<div class="card center"><h2>✓ Thank you</h2>
