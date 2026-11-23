@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Participant Check-in</title>
+<style>
+  :root{--bg:#f5f7fb;--card:#fff;--line:#e3e8f0;--txt:#1b2333;--mut:#6b778c;--acc:#2563eb;--ok:#16a34a;--bad:#dc2626}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+  .wrap{max-width:560px;margin:0 auto;padding:28px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px}
+  .sub{color:var(--mut);margin:0 0 22px;font-size:14px;line-height:1.6}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+  label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
+  label:first-child{margin-top:0}
+  input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font-size:15px;background:#fff;color:var(--txt)}
+  .seg{display:flex;gap:8px}
+  .seg button{flex:1;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:600;cursor:pointer;color:var(--mut);font-size:14px}
+  .seg button.yes{border-color:var(--ok);background:#ecfdf3;color:var(--ok)}
+  .seg button.no{border-color:var(--bad);background:#fef2f2;color:var(--bad)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .hidden{display:none}
+  .btn{width:100%;margin-top:18px;padding:14px;border:0;border-radius:10px;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .note{font-size:13px;color:var(--mut);line-height:1.6;margin:0}
+  .center{text-align:center;padding:36px 20px}
+  .center h2{color:var(--ok);margin-top:0}
+  .err h2{color:var(--bad)}
+  @media(max-width:480px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="card center" id="loading"><p class="note">Loading…</p></div>
+
+  <div id="form" class="hidden">
+    <h1>Participant Check-in</h1>
+    <p class="sub">Indonesian Reading Recording<br>First step: record the <b>first 100 sentences by tomorrow</b>. After they are approved, you will continue with the remaining sentences.</p>
+
+    <div class="card">
+      <label>Your name</label>
+      <select id="who"><option value="">Select your name</option></select>
+
+      <label>Can you record the first 100 sentences by tomorrow (<span id="tmr"></span>)?</label>
+      <div class="seg" id="seg">
+        <button type="button" data-s="Available">Yes, I can</button>
+        <button type="button" data-s="Not available">No, I can't</button>
+      </div>
+
+      <label>WhatsApp number (optional)</label>
+      <input id="contact" placeholder="+62…" inputmode="tel">
+
+      <label>Note (optional)</label>
+      <input id="note" placeholder="e.g. can record evenings only">
+    </div>
+
+    <div class="card">
+      <p class="note">By confirming, you agree to record in a quiet room, keep the phone about 20 cm from your mouth,
+      speak clearly at a normal volume, and read exactly as written in the text.</p>
+      <button class="btn" id="submit">Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+
+const $ = id => document.getElementById(id);
+const code = new URLSearchParams(location.search).get("c") || "";
+let status = "";
+const t = new Date(); t.setDate(t.getDate() + 1);
+$("tmr").textContent = t.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+
+function fail(msg) {
+  $("app").innerHTML = `<div class="card center err"><h2>Link not valid</h2><p class="note">${msg}</p></div>`;
+}
+
+(async () => {
+  if (!code) return fail("Please use the link you received from your coordinator.");
+  try {
+    const j = await (await fetch(SCRIPT_URL + "?code=" + encodeURIComponent(code))).json();
+    if (!j.ok) return fail("Please use the link you received from your coordinator.");
+    j.members.forEach(([roll, name]) => $("who").add(new Option(roll + " – " + name, roll)));
+    $("loading").classList.add("hidden"); $("form").classList.remove("hidden");
+  } catch (e) { fail("Could not load. Please check your internet and refresh."); }
+})();
+
+document.querySelectorAll("#seg button").forEach(b => b.onclick = () => {
+  status = b.dataset.s;
+  document.querySelectorAll("#seg button").forEach(x => x.className = "");
+  b.className = status === "Available" ? "yes" : "no";
+});
+
+$("submit").onclick = async () => {
+  if (!$("who").value) return alert("Please select your name.");
+  if (!status) return alert("Please choose your availability.");
+  const btn = $("submit"); btn.disabled = true; btn.textContent = "Submitting…";
+  try {
+    const r = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ code, roll: $("who").value, status,
+        contact: $("contact").value.trim(), note: $("note").value.trim() }) });
+    const j = await r.json(); if (!j.ok) throw new Error(j.msg);
+    const name = $("who").selectedOptions[0].text;
+    $("app").innerHTML = `<div class="card center"><h2>✓ Thank you</h2>
+      <p><b>${name}</b> – ${status === "Available" ? "Confirmed" : "Not available"}</p>
+      <p class="note">${status === "Available" ? "The recording tool will be shared with you soon." : "Thank you for letting us know."}</p></div>`;
+  } catch (e) { alert("Could not submit: " + e.message); btn.disabled = false; btn.textContent = "Submit"; }
+};
+</script>
+</body>
+</html>
