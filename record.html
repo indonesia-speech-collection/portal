@@ -51,6 +51,7 @@
   .qc{margin-top:12px;padding:12px;border-radius:10px;font-size:14px;line-height:1.6}
   .qc.pass{background:#052e16;border:1px solid #166534}
   .qc.fail{background:#2a0a0a;border:1px solid #7f1d1d}
+  .qc.warn{background:#2a1d05;border:1px solid #a16207}
   .prog{height:8px;background:#0b1426;border-radius:6px;overflow:hidden;margin-top:8px}
   .prog i{display:block;height:100%;background:var(--ok)}
   .kbd{font-size:12px;border:1px solid var(--line);border-radius:4px;padding:1px 6px}
@@ -245,11 +246,11 @@ $("micBtn").onclick = async () => {
   let pk = 0; for (const v of n) pk = Math.max(pk, Math.abs(v));
   const ok = pk <= QC.ROOM_NOISE_MAX;
   const r = $("roomRes"); r.classList.remove("hidden");
-  r.className = "qc " + (ok ? "pass" : "fail");
-  r.innerHTML = ok ? `✓ Your room is quiet enough (noise ${pk}).` :
-    `✗ Too much background noise (${pk}). Move to a quieter place, switch off fans/AC/TV, then check again.`;
+  r.className = "qc " + (ok ? "pass" : "warn");
+  r.innerHTML = ok ? `✓ Your room is quiet (noise level ${pk}).` :
+    `⚠ Background noise is high (noise level ${pk}). For better recordings, move to a quieter place or switch off fans/AC/TV. You can still continue.`;
   $("micBtn").disabled = false; $("micBtn").textContent = "Check my room again";
-  $("startBtn").classList.toggle("hidden", !ok);
+  $("startBtn").classList.remove("hidden");
 };
 $("startBtn").onclick = () => {
   $("vCheck").classList.add("hidden"); $("vStudio").classList.remove("hidden");
@@ -326,7 +327,6 @@ function analyse(pcm) {
   if (trail < QC.MIN_SIL) err.push("You stopped too fast. Stay silent after the last word until it stops by itself.");
   if (clip > 5 || pk > QC.PEAK_MAX) err.push("Too loud. Hold the phone a little further away (about 20 cm) or speak a bit softer.");
   else if (pk < QC.PEAK_MIN || srms < QC.SPEECH_RMS_MIN) err.push("Voice too quiet. Hold the phone closer (10–15 cm), with the bottom of the phone (the microphone) towards your mouth, and speak a little louder. The phone volume button does not change this.");
-  if (np > QC.NOISE_PEAK_MAX) err.push("Background noise detected. Wait for silence, stay still, and do not touch the phone.");
   return { err, out, m: { peak: pk, speechRms: srms, noisePeak: np, lead: +lead.toFixed(2), trail: +trail.toFixed(2), dur: +(out.length / SR).toFixed(2) } };
 }
 
