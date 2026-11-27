@@ -226,6 +226,9 @@ $("goBtn").onclick = async () => {
     $("logout").onclick = e => { e.preventDefault(); try { localStorage.removeItem("rs_login"); } catch (x) {} location.reload(); };
     await loadStatus();
     Object.keys(status).forEach(k => { if (status[k] === "pass" && !uploaded.has(+k)) queueUpload(+k); });
+    // Progress also comes from the server: sentences already uploaded count as done,
+    // even on a new browser / after the phone cleared its storage.
+    uploaded.forEach(i => { if (status[i] !== "pass") status[i] = "pass"; });
     $("vLogin").classList.add("hidden"); $("vCheck").classList.remove("hidden");
   } catch (e) { toast(e.message === "Failed to fetch" ? "No internet connection" : e.message); }
   btn.disabled = false; btn.textContent = "Log in";
@@ -417,7 +420,9 @@ async function goTo(i) {
   const saved = await dbGet(roll + "|" + i);
   lastBlob = saved ? new Blob([saved.wav], { type: "audio/wav" }) : null;
   $("playBtn").disabled = !lastBlob;
-  showQc(saved ? { pass: saved.pass, err: saved.err || [], m: saved.m } : null);
+  if (saved) showQc({ pass: saved.pass, err: saved.err || [], m: saved.m });
+  else if (uploaded.has(i)) { const q = $("qc"); q.className = "qc pass"; q.innerHTML = "✓ Already recorded and saved online. Record again only if you want to replace it."; }
+  else showQc(null);
   renderBatches(); renderGrid();
 }
 function showQc(r) {
